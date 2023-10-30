@@ -18,8 +18,12 @@ ROBOT_NAME_ALIAS={
   'dxlpo2_f1' :'DxlpO2Gripper_Fork1',
   'dxlpy1' :'DxlpY1Gripper',
   'dxlo3':'DxlO3Gripper',
-  'moto':'Motoman',
-  'motos':'Motoman_SIM',
+  'motosia10f':'Motoman_SIA10F',
+  'motosia10fs':'Motoman_SIA10F_SIM',
+  'motomini':'Motoman_MotoMINI',
+  'motominis':'Motoman_MotoMINI_SIM',
+  'motominithg':'Motoman_MotoMINI_ThG',
+  'motominithgs':'Motoman_MotoMINI_ThG_SIM',
   'mikata':'Mikata',
   'mikatas':'Mikata_SIM',
   'mikata2':'Mikata2',
@@ -147,9 +151,13 @@ def Run(ct,*args):
     mod= SmartImportReload('ay_py.ros.rbt_dxlo3')
     ct.robot= mod.TRobotDxlO3Gripper()
 
-  elif robot in ('Motoman','Motoman_SIM'):
+  elif robot.startswith('Motoman_SIA10F'):
     mod= SmartImportReload('ay_py.ros.rbt_moto')
-    ct.robot= mod.TRobotMotoman(is_sim=is_sim)
+    ct.robot= mod.TRobotMotoman(name='Motoman_SIA10F', is_sim=is_sim)
+
+  elif robot.startswith('Motoman_MotoMINI'):
+    mod= SmartImportReload('ay_py.ros.rbt_moto')
+    ct.robot= mod.TRobotMotoman(name='Motoman_MotoMINI', is_sim=is_sim)
 
   elif robot in ('Mikata2','Mikata2_SIM'):
     mod= SmartImportReload('ay_py.ros.rbt_mikata2')
