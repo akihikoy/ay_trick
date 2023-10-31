@@ -1,6 +1,9 @@
 #RHP12RNGripper of UR3e
 #FIXME: Change names: wrist_* --> grip_*
 
+#NOTE: From the base point of RHP12RNGripper to the fingertip of FV+: 212.57mm.
+#NOTE: From the wrist plane to the base point of RHP12RNGripper: 18.00mm.
+
 #Gripper
 wrist_r:
   #Kinematics information:

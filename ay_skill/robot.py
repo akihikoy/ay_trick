@@ -18,12 +18,12 @@ ROBOT_NAME_ALIAS={
   'dxlpo2_f1' :'DxlpO2Gripper_Fork1',
   'dxlpy1' :'DxlpY1Gripper',
   'dxlo3':'DxlO3Gripper',
-  'motosia10f':'Motoman_SIA10F',
-  'motosia10fs':'Motoman_SIA10F_SIM',
-  'motomini':'Motoman_MotoMINI',
-  'motominis':'Motoman_MotoMINI_SIM',
-  'motominithg':'Motoman_MotoMINI_ThG',
-  'motominithgs':'Motoman_MotoMINI_ThG_SIM',
+  'motosia10f':'MotomanSIA10F',
+  'motosia10fs':'MotomanSIA10F_SIM',
+  'motomini':'MotomanMotoMINI',
+  'motominis':'MotomanMotoMINI_SIM',
+  'motominithg':'MotomanMotoMINIThG',
+  'motominithgs':'MotomanMotoMINIThG_SIM',
   'mikata':'Mikata',
   'mikatas':'Mikata_SIM',
   'mikata2':'Mikata2',
@@ -151,13 +151,17 @@ def Run(ct,*args):
     mod= SmartImportReload('ay_py.ros.rbt_dxlo3')
     ct.robot= mod.TRobotDxlO3Gripper()
 
-  elif robot.startswith('Motoman_SIA10F'):
+  elif robot in ('MotomanSIA10F', 'MotomanSIA10F_SIM'):
     mod= SmartImportReload('ay_py.ros.rbt_moto')
-    ct.robot= mod.TRobotMotoman(name='Motoman_SIA10F', is_sim=is_sim)
+    ct.robot= mod.TRobotMotoman(name='MotomanSIA10F', is_sim=is_sim)
 
-  elif robot.startswith('Motoman_MotoMINI'):
+  elif robot in ('MotomanMotoMINI', 'MotomanMotoMINI_SIM'):
     mod= SmartImportReload('ay_py.ros.rbt_moto')
-    ct.robot= mod.TRobotMotoman(name='Motoman_MotoMINI', is_sim=is_sim)
+    ct.robot= mod.TRobotMotoman(name='MotomanMotoMINI', is_sim=is_sim)
+
+  elif robot in ('MotomanMotoMINIThG', 'MotomanMotoMINIThG_SIM'):
+    mod= SmartImportReload('ay_py.ros.rbt_motothg')
+    ct.robot= mod.TRobotMotomanThG(name='MotomanMotoMINIThG', is_sim=is_sim)
 
   elif robot in ('Mikata2','Mikata2_SIM'):
     mod= SmartImportReload('ay_py.ros.rbt_mikata2')
@@ -300,8 +304,10 @@ def Run(ct,*args):
     ct.AddDictAttr(LoadYAML(model_dir+'/robot/gripper_ur_dxlpy1.yaml'))
   elif ct.robot.Is('DxlO3Gripper'):
     ct.AddDictAttr(LoadYAML(model_dir+'/robot/gripper_dxlo3.yaml'))
-  elif ct.robot.Is('Motoman'):
-    ct.AddDictAttr(LoadYAML(model_dir+'/robot/gripper_moto.yaml'))
+  elif ct.robot.Is('MotomanSIA10FRq'):
+    ct.AddDictAttr(LoadYAML(model_dir+'/robot/gripper_moto_rq.yaml'))
+  elif ct.robot.Is('MotomanMotoMINIThG'):
+    ct.AddDictAttr(LoadYAML(model_dir+'/robot/gripper_motomini_thg.yaml'))
   elif ct.robot.Is('Mikata'):
     ct.AddDictAttr(LoadYAML(model_dir+'/robot/gripper_mikata.yaml'))
   elif ct.robot.Is('UR3DxlG'):
