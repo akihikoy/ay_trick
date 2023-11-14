@@ -4,7 +4,7 @@ def Help():
   return '''Example of pick and place from/to three locations.
   Setup:
     $ robot
-    $  roslaunch fingervision fvp_general.launch pkg_dir:=${HOME}/data config1:=config/fvp300x_l.yaml config2:=config/fvp300x_r.yaml publish_image:=false
+    $ roslaunch fingervision fvp_general.launch pkg_dir:=${HOME}/data config1:=config/fvp300x_l.yaml config2:=config/fvp300x_r.yaml publish_image:=false
     > robot
     > viz ''
     > fv_names,node_names= {'A':{RIGHT:'fvp_1_r',LEFT:'fvp_1_l'}},None
@@ -138,7 +138,9 @@ def Run(ct,*args):
   rospy.sleep(0.2)
   if with_fv:  ct.Run('fv.hold','on',arm)
 
-  print('Cycle time: {}s'.format((rospy.Time.now()-t_start).to_sec()))
+  if not ct.HasAttr(TMP,'CycleTime'):  ct.SetAttr(TMP,'CycleTime', [])
+  ct.GetAttr(TMP,'CycleTime').append((rospy.Time.now()-t_start).to_sec())
+  print('Cycle time: {} s'.format(ct.GetAttr(TMP,'CycleTime')[-1]))
   t_start= rospy.Time.now()
 
   xf_traj22= np.array( [xf_grasp_list[1]]
@@ -165,7 +167,9 @@ def Run(ct,*args):
   ct.robot.MoveGripper(g_trg31)
   rospy.sleep(0.2)
   if with_fv:  ct.Run('fv.hold','on',arm)
-  print('Cycle time: {}s'.format((rospy.Time.now()-t_start).to_sec()))
+
+  ct.GetAttr(TMP,'CycleTime').append((rospy.Time.now()-t_start).to_sec())
+  print('Cycle time: {} s'.format(ct.GetAttr(TMP,'CycleTime')[-1]))
   #t_start= rospy.Time.now()
 
   xf_traj32= np.array( [xf_grasp_list[2]]
