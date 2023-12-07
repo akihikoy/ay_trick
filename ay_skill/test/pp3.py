@@ -9,7 +9,13 @@ def Help():
     > viz ''
     > fv_names,node_names= {'A':{RIGHT:'fvp_1_r',LEFT:'fvp_1_l'}},None
     > fv.fv 'on', 'all', fv_names, node_names, 'no_wrench'
-  Usage: test.pp3
+  Usage: test.pp3 [SPEED_INDEX [, CTRL_SLEEP [, WITH_FV]]]
+    SPEED_INDEX: Index of speed configuration (default=10; slow; see the list).
+        If SPEED_INDEX is not int, it is assumed to be (LIN_SPEED,LIN_ACC).
+        LIN_SPEED: Linear speed m/s.
+        LIN_ACC: Linear acceleration m/s^2.
+    CTRL_SLEEP: Sleep time in seconds after each trajectory control (default=0.2).
+    WITH_FV: Using FV-based gripper control (default=True).
   '''
 
 def FollowXTraj(ct, x_traj, x_ext, q_seed, arm, lin_speed, lin_acc, tool_rad, joint_rad, idx_split):
@@ -102,7 +108,10 @@ def Run(ct,*args):
     220: (22.0 ,9.0  ),  #Working
     #220: (22.0 ,12.0 ),  #Error (Driver error: Validation failed: Max velocity exceeded for trajectory pt 4, joint 'joint_3_u')
   }
-  lin_speed,lin_acc= speed_list[speed_index]
+  if isinstance(speed_index, int):
+    lin_speed,lin_acc= speed_list[speed_index]
+  else:
+    lin_speed,lin_acc= speed_index
   ftargs_mv= dict(x_ext=lx_f, arm=arm, lin_speed=[lin_speed], lin_acc=[lin_acc], tool_rad=0.05, joint_rad=0.01, idx_split=None)
   ftargs_pk= dict(x_ext=lx_f, arm=arm, lin_speed=[0.04,lin_speed], lin_acc=[0.2,lin_acc], tool_rad=0.05, joint_rad=0.01, idx_split=2)
   if not with_fv:
