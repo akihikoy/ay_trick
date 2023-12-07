@@ -48,15 +48,19 @@ def FollowXTraj(ct, x_traj, x_ext, q_seed, arm, lin_speed, lin_acc, tool_rad, jo
   #TEST: Replace the first point with the current joint angles (needed for Motoman):
   q_traj[0]= ct.robot.Q(arm=arm)
   ct.robot.FollowQTraj(q_traj, tx_traj, arm=arm, blocking=True)
-  #rospy.sleep(0.2)
 
 
 def Run(ct,*args):
-  #with_fv= False
-  with_fv= True
+  speed_index= args[0] if len(args)>0 else 10
+  ctrl_sleep= args[1] if len(args)>1 else 0.2
+  with_fv= args[2] if len(args)>2 else True
   arm= 0
   #Fingertip pose (local pose in the wrist frame).
   lx_f= ct.GetAttr('wrist_'+LRToStrs(ct.robot.Arm),'lx')
+
+  if with_fv and not ct.Run('fv.fv', 'is_active')[0]:
+    with_fv= False
+    CPrint(3,'Set with_fv=False as FV is not configured')
 
   #Common orientation:
   qf_cmn= RotToQ([[0, 0, 1], [0, 1, 0], [-1, 0, 0]]).tolist()
@@ -67,6 +71,8 @@ def Run(ct,*args):
     [0.423, 0.15758975299434502, -0.23492058486461642],
     ]
   q_init= [0.6747981905937195, -0.879830002784729, -0.05734863132238388, 0.20483757555484772]
+
+  assert(len(q_init)==ct.robot.DoF())
 
   g_open= 0.04
   g_pregrasp= 0.026
@@ -79,25 +85,34 @@ def Run(ct,*args):
   xf_place_list= [(pf_pick+[0,-0.3,0]).tolist()+qf_cmn for pf_pick in pf_pick_list]
   xf_preplace_list= [(pf_pick+[0,-0.3,0.1]).tolist()+qf_cmn for pf_pick in pf_pick_list]
 
-  #lin_speed,lin_acc= 0.1,0.25
-  #lin_speed,lin_acc= 0.4,0.5
-  #lin_speed,lin_acc= 1.0,0.5
-  #lin_speed,lin_acc= 2.0,1.0
-  #lin_speed,lin_acc= 4.0,2.0
-  #lin_speed,lin_acc= 6.0,4.0
-  #lin_speed,lin_acc= 8.0,4.0
-  #lin_speed,lin_acc= 12.0,6.0
-  lin_speed,lin_acc= 16.0,8.0
-  #lin_speed,lin_acc= 20.0,10.0
-  #lin_speed,lin_acc= 22.0,12.0
+  speed_list= {
+    1  : (0.1  ,0.25 ),
+    4  : (0.4  ,0.5  ),
+    10 : (1.0  ,0.5  ),
+    20 : (2.0  ,1.0  ),
+    40 : (4.0  ,2.0  ),
+    60 : (6.0  ,4.0  ),
+    80 : (8.0  ,4.0  ),
+    100: (10.0 ,5.0  ),
+    120: (12.0 ,6.0  ),
+    160: (16.0 ,8.0  ),  #Max of working stably
+    180: (18.0 ,9.0  ),  #Working
+    200: (20.0 ,9.0  ),  #Working
+    #200: (20.0 ,10.0 ),  #Error (Robot Alarm 4414: Segment over R1:HIGH SL[U]R)
+    220: (22.0 ,9.0  ),  #Working
+    #220: (22.0 ,12.0 ),  #Error (Driver error: Validation failed: Max velocity exceeded for trajectory pt 4, joint 'joint_3_u')
+  }
+  lin_speed,lin_acc= speed_list[speed_index]
   ftargs_mv= dict(x_ext=lx_f, arm=arm, lin_speed=[lin_speed], lin_acc=[lin_acc], tool_rad=0.05, joint_rad=0.01, idx_split=None)
   ftargs_pk= dict(x_ext=lx_f, arm=arm, lin_speed=[0.04,lin_speed], lin_acc=[0.2,lin_acc], tool_rad=0.05, joint_rad=0.01, idx_split=2)
-  #ftargs_pk= ftargs_mv
+  if not with_fv:
+    #Disable slow-down motion during picking up:
+    ftargs_pk= ftargs_mv
 
   #Move to the initial pose:
   ct.robot.MoveGripper(g_open)
   ct.robot.MoveToQ(q_init, dt=4.0, blocking=True)
-  rospy.sleep(0.2)
+  rospy.sleep(ctrl_sleep)
 
   xf_curr= ct.robot.FK(x_ext=lx_f)
 
@@ -108,7 +123,7 @@ def Run(ct,*args):
 
   FollowXTraj(ct, xf_traj11, q_seed=ct.robot.Q(arm=arm), **ftargs_mv)
   ct.robot.MoveGripper(g_trg11)
-  rospy.sleep(0.2)
+  rospy.sleep(ctrl_sleep)
   if with_fv:  ct.Run('fv.hold','on',arm)
 
   t_start= rospy.Time.now()
@@ -123,7 +138,7 @@ def Run(ct,*args):
   FollowXTraj(ct, xf_traj12, q_seed=ct.robot.Q(arm=arm), **ftargs_pk)
   if with_fv:  ct.Run('fv.hold','off',arm)
   ct.robot.MoveGripper(g_trg12)
-  rospy.sleep(0.2)
+  rospy.sleep(ctrl_sleep)
 
   #Pick and place the 2nd item:
   xf_traj21= np.array( [xf_place_list[0]]
@@ -135,7 +150,7 @@ def Run(ct,*args):
 
   FollowXTraj(ct, xf_traj21, q_seed=ct.robot.Q(arm=arm), **ftargs_mv)
   ct.robot.MoveGripper(g_trg21)
-  rospy.sleep(0.2)
+  rospy.sleep(ctrl_sleep)
   if with_fv:  ct.Run('fv.hold','on',arm)
 
   if not ct.HasAttr(TMP,'CycleTime'):  ct.SetAttr(TMP,'CycleTime', [])
@@ -153,7 +168,7 @@ def Run(ct,*args):
   FollowXTraj(ct, xf_traj22, q_seed=ct.robot.Q(arm=arm), **ftargs_pk)
   if with_fv:  ct.Run('fv.hold','off',arm)
   ct.robot.MoveGripper(g_trg22)
-  rospy.sleep(0.2)
+  rospy.sleep(ctrl_sleep)
 
   #Pick and place the 3rd item:
   xf_traj31= np.array( [xf_place_list[1]]
@@ -165,7 +180,7 @@ def Run(ct,*args):
 
   FollowXTraj(ct, xf_traj31, q_seed=ct.robot.Q(arm=arm), **ftargs_mv)
   ct.robot.MoveGripper(g_trg31)
-  rospy.sleep(0.2)
+  rospy.sleep(ctrl_sleep)
   if with_fv:  ct.Run('fv.hold','on',arm)
 
   ct.GetAttr(TMP,'CycleTime').append((rospy.Time.now()-t_start).to_sec())
@@ -182,7 +197,7 @@ def Run(ct,*args):
   FollowXTraj(ct, xf_traj32, q_seed=ct.robot.Q(arm=arm), **ftargs_pk)
   if with_fv:  ct.Run('fv.hold','off',arm)
   ct.robot.MoveGripper(g_trg32)
-  rospy.sleep(0.2)
+  rospy.sleep(ctrl_sleep)
 
   #ct.robot.MoveToX(xf_preplace_list[2], dt=4.0, x_ext=lx_f, blocking=True)
   xf_traj_f= np.array( [xf_place_list[2]]
