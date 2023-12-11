@@ -29,7 +29,8 @@ def Run(ct,*args):
   ct.SetAttr(TMP,'scene', LUnion(ct.GetAttrOr([],TMP,'scene'),['box']))
 
   #Setup state-validity-check scene:
-  ct.Run('scene', 'make')
+  bb_margin= 1.0  #Deciding the margin scaling factor of the bouding box; default=1.1
+  ct.Run('scene', 'make', [], bb_margin)
 
   #Visualize scene:
   ct.Run('viz','')
