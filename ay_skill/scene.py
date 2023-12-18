@@ -146,6 +146,9 @@ def Run(ct,*args):
                            ('link_3_u', 'link_4_r'), ('link_5_b', 'link_4_r'), ('link_6_t', 'link_4_r'),
                            ('link_4_r', 'wrist_r'), ('link_6_t', 'link_5_b'),
                            ('link_5_b', 'wrist_r'), ('link_6_t', 'wrist_r'))
+      elif ct.robot.Is('MotomanSG650'):
+        ign_combinations= (('base_link', 'link_1_s'),
+                           ('link_1_s', 'link_2_l'), ('link_2_l', 'link_1_s_cable'), ('link_2_l', 'link_4_r'), ('link_4_r', 'wrist_r') )
       elif ct.robot.Is('Motoman'):
         ign_combinations= (('base_link', 'link_s'),
                            ('link_s', 'link_l'),('link_l', 'link_e'),('link_e', 'link_u'),
