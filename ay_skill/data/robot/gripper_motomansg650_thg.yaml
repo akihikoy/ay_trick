@@ -10,8 +10,8 @@ wrist_r:
   kinematics_chain:
     #Right or left arm:
     parent_arm: r
-  #Gripper pose (Q=MultiplyQ(QFromAxisAngle([0,1,0],0.5*np.pi), QFromAxisAngle([0,0,1],np.pi)).tolist()):
-  lx: [0.0,0.0,0.21757, 0.7071067811865475, 0.0, 0.7071067811865476, 0.0]
+  #Gripper pose (Q=RotToQ(ExyzToRot([0,0,1],[0,-1,0],[1,0,0])).tolist()):
+  lx: [0.0,0.0,0.21757, 0.7071067811865475, 0.0, 0.7071067811865475, 0.0]
   #Bounding box is attached to the local frame of 'lx'.
   bound_box:
     #Optical skin:

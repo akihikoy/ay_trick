@@ -28,6 +28,14 @@ ROBOT_NAME_ALIAS={
   'motosg650s'   :'MotomanSG650_SIM',
   'motosg650thg' :'MotomanSG650ThG',
   'motosg650thgs':'MotomanSG650ThG_SIM',
+  'motogp7'    :'MotomanGP7',
+  'motogp7s'   :'MotomanGP7_SIM',
+  'motogp7thg' :'MotomanGP7ThG',
+  'motogp7thgs':'MotomanGP7ThG_SIM',
+  'motohc10sdtp'    :'MotomanHC10SDTP',
+  'motohc10sdtps'   :'MotomanHC10SDTP_SIM',
+  'motohc10sdtpthg' :'MotomanHC10SDTPThG',
+  'motohc10sdtpthgs':'MotomanHC10SDTPThG_SIM',
   'mikata':'Mikata',
   'mikatas':'Mikata_SIM',
   'mikata2':'Mikata2',
@@ -162,17 +170,31 @@ def Run(ct,*args):
   elif robot in ('MotomanMotoMINI', 'MotomanMotoMINI_SIM'):
     mod= SmartImportReload('ay_py.ros.rbt_moto')
     ct.robot= mod.TRobotMotoman(name='MotomanMotoMINI', is_sim=is_sim)
-
   elif robot in ('MotomanMotoMINIThG', 'MotomanMotoMINIThG_SIM'):
     mod= SmartImportReload('ay_py.ros.rbt_motothg')
     ct.robot= mod.TRobotMotomanThG(name='MotomanMotoMINIThG', is_sim=is_sim)
+
   elif robot in ('MotomanSG650', 'MotomanSG650_SIM'):
     mod= SmartImportReload('ay_py.ros.rbt_moto')
     ct.robot= mod.TRobotMotoman(name='MotomanSG650', is_sim=is_sim)
-
   elif robot in ('MotomanSG650ThG', 'MotomanSG650ThG_SIM'):
     mod= SmartImportReload('ay_py.ros.rbt_motothg')
     ct.robot= mod.TRobotMotomanThG(name='MotomanSG650ThG', is_sim=is_sim)
+
+  elif robot in ('MotomanGP7', 'MotomanGP7_SIM'):
+    mod= SmartImportReload('ay_py.ros.rbt_moto')
+    ct.robot= mod.TRobotMotoman(name='MotomanGP7', is_sim=is_sim)
+  elif robot in ('MotomanGP7ThG', 'MotomanGP7ThG_SIM'):
+    mod= SmartImportReload('ay_py.ros.rbt_motothg')
+    ct.robot= mod.TRobotMotomanThG(name='MotomanGP7ThG', is_sim=is_sim)
+
+  elif robot in ('MotomanHC10SDTP', 'MotomanHC10SDTP_SIM'):
+    mod= SmartImportReload('ay_py.ros.rbt_moto')
+    ct.robot= mod.TRobotMotoman(name='MotomanHC10SDTP', is_sim=is_sim)
+  elif robot in ('MotomanHC10SDTPThG', 'MotomanHC10SDTPThG_SIM'):
+    mod= SmartImportReload('ay_py.ros.rbt_motothg')
+    ct.robot= mod.TRobotMotomanThG(name='MotomanHC10SDTPThG', is_sim=is_sim)
+
   elif robot in ('Mikata2','Mikata2_SIM'):
     mod= SmartImportReload('ay_py.ros.rbt_mikata2')
     ct.robot= mod.TRobotMikata2(is_sim=is_sim)
@@ -320,6 +342,10 @@ def Run(ct,*args):
     ct.AddDictAttr(LoadYAML(model_dir+'/robot/gripper_motomini_thg.yaml'))
   elif ct.robot.Is('MotomanSG650ThG'):
     ct.AddDictAttr(LoadYAML(model_dir+'/robot/gripper_motomansg650_thg.yaml'))
+  elif ct.robot.Is('MotomanGP7ThG'):
+    ct.AddDictAttr(LoadYAML(model_dir+'/robot/gripper_motomangp7_thg.yaml'))
+  elif ct.robot.Is('MotomanHC10SDTPThG'):
+    ct.AddDictAttr(LoadYAML(model_dir+'/robot/gripper_motomanhc10sdtp_thg.yaml'))
   elif ct.robot.Is('Mikata'):
     ct.AddDictAttr(LoadYAML(model_dir+'/robot/gripper_mikata.yaml'))
   elif ct.robot.Is('UR3DxlG'):
