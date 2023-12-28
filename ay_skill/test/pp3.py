@@ -58,7 +58,7 @@ def FollowXTraj(ct, x_traj, x_ext, q_seed, arm, lin_speed, lin_acc, tool_rad, jo
 
 def Run(ct,*args):
   speed_index= args[0] if len(args)>0 else 10
-  ctrl_sleep= args[1] if len(args)>1 else 0.2
+  ctrl_sleep= args[1] if len(args)>1 else 0.0   #NOTE: 0.2 for the standard MotoROS.
   with_fv= args[2] if len(args)>2 else True
   arm= 0
   #Fingertip pose (local pose in the wrist frame).
@@ -68,21 +68,63 @@ def Run(ct,*args):
     with_fv= False
     CPrint(3,'Set with_fv=False as FV is not configured')
 
-  #Common orientation:
-  qf_cmn= RotToQ([[0, 0, 1], [0, 1, 0], [-1, 0, 0]]).tolist()
+  if ct.robot.Is('MotomanSG650'):
+    #Common orientation:
+    qf_cmn= RotToQ([[0, 0, 1], [0, 1, 0], [-1, 0, 0]]).tolist()
 
-  pf_pick_list= [
-    [0.567, 0.15758975299434502, -0.23492058486461642],
-    [0.495, 0.15758975299434502, -0.23492058486461642],
-    [0.423, 0.15758975299434502, -0.23492058486461642],
-    ]
-  q_init= [0.6747981905937195, -0.879830002784729, -0.05734863132238388, 0.20483757555484772]
+    pf_pick_list= [
+      [0.567, 0.15758975299434502, -0.23492058486461642],
+      [0.495, 0.15758975299434502, -0.23492058486461642],
+      [0.423, 0.15758975299434502, -0.23492058486461642],
+      ]
+    q_init= [0.6747981905937195, -0.879830002784729, -0.05734863132238388, 0.20483757555484772]
 
-  assert(len(q_init)==ct.robot.DoF())
+    assert(len(q_init)==ct.robot.DoF())
 
-  g_open= 0.04
-  g_pregrasp= 0.026
-  #g_pregrasp= 0.03
+    g_open= 0.04
+    g_pregrasp= 0.026
+    #g_pregrasp= 0.03
+
+  elif ct.robot.Is('MotomanGP7'):
+    #Common orientation:
+    qf_cmn= RotToQ([[0, 0, 1], [0, 1, 0], [-1, 0, 0]]).tolist()
+
+    zf= 0.0
+    pf_pick_list= [
+      [0.567, 0.15759, zf],
+      [0.502, 0.15759, zf],
+      [0.437, 0.15759, zf],
+      ]
+    #movexe pf_pick_list[0][:2]+[zf+0.1]+qf_cmn
+    q_init= [0.27108928360149276, 0.5449295537157374, -0.3136615947772148, 1.1398479194562878e-07, -0.7122047713086253, -0.2710893980086264]
+
+    assert(len(q_init)==ct.robot.DoF())
+
+    g_open= 0.04
+    g_pregrasp= 0.026
+    #g_pregrasp= 0.03
+
+  elif ct.robot.Is('MotomanHC10SDTP'):
+    #Common orientation:
+    qf_cmn= RotToQ([[0, 0, 1], [0, 1, 0], [-1, 0, 0]]).tolist()
+
+    zf= 0.0
+    pf_pick_list= [
+      [0.567, 0.15759, zf],
+      [0.502, 0.15759, zf],
+      [0.437, 0.15759, zf],
+      ]
+    #movexe pf_pick_list[0][:2]+[zf+0.1]+qf_cmn
+    q_init= [-0.0077850425408454394, 0.5867028016435086, -0.1413468431913915, 5.3521207950985214e-08, -0.8427465880130912, -1.5630114247298614]
+
+    assert(len(q_init)==ct.robot.DoF())
+
+    g_open= 0.04
+    g_pregrasp= 0.026
+    #g_pregrasp= 0.03
+
+  else:
+    raise Exception('test.pp3: The parameters of this script are not configured for {}'.format(ct.robot.Name))
 
   pf_pick_list= np.array(pf_pick_list)
 
@@ -93,19 +135,21 @@ def Run(ct,*args):
 
   speed_list= {
     1  : (0.1  ,0.25 ),
+    2  : (0.2  ,0.5  ),  #Working,HC10SDTP@SpdLim=250mm/s
+    3  : (0.3  ,0.5  ),
     4  : (0.4  ,0.5  ),
-    10 : (1.0  ,0.5  ),
+    10 : (1.0  ,0.5  ),  #Working,HC10SDTP@SpdLim=1500mm/s
     20 : (2.0  ,1.0  ),
-    40 : (4.0  ,2.0  ),
+    40 : (4.0  ,2.0  ),  #Working,HC10SDTP@SpdLim=1500mm/s
     60 : (6.0  ,4.0  ),
     80 : (8.0  ,4.0  ),
-    100: (10.0 ,5.0  ),
+    100: (10.0 ,5.0  ),  #Working,SG650,GP7
     120: (12.0 ,6.0  ),
-    160: (16.0 ,8.0  ),  #Max of working stably
-    180: (18.0 ,9.0  ),  #Working
-    200: (20.0 ,9.0  ),  #Working
+    160: (16.0 ,8.0  ),  #Max of working stably,SG650
+    180: (18.0 ,9.0  ),  #Working,SG650
+    200: (20.0 ,9.0  ),  #Working,SG650,GP7
     #200: (20.0 ,10.0 ),  #Error (Robot Alarm 4414: Segment over R1:HIGH SL[U]R)
-    220: (22.0 ,9.0  ),  #Working
+    220: (22.0 ,9.0  ),  #Working,SG650,GP7
     #220: (22.0 ,12.0 ),  #Error (Driver error: Validation failed: Max velocity exceeded for trajectory pt 4, joint 'joint_3_u')
   }
   if isinstance(speed_index, int):
@@ -131,8 +175,8 @@ def Run(ct,*args):
   g_trg11= g_pregrasp
 
   FollowXTraj(ct, xf_traj11, q_seed=ct.robot.Q(arm=arm), **ftargs_mv)
-  ct.robot.MoveGripper(g_trg11)
-  rospy.sleep(ctrl_sleep)
+  ct.robot.MoveGripper(g_trg11,blocking=True)
+  rospy.sleep(ctrl_sleep+0.2)
   if with_fv:  ct.Run('fv.hold','on',arm)
 
   t_start= rospy.Time.now()
@@ -158,8 +202,8 @@ def Run(ct,*args):
   g_trg21= g_pregrasp
 
   FollowXTraj(ct, xf_traj21, q_seed=ct.robot.Q(arm=arm), **ftargs_mv)
-  ct.robot.MoveGripper(g_trg21)
-  rospy.sleep(ctrl_sleep)
+  ct.robot.MoveGripper(g_trg21,blocking=True)
+  rospy.sleep(ctrl_sleep+0.2)
   if with_fv:  ct.Run('fv.hold','on',arm)
 
   if not ct.HasAttr(TMP,'CycleTime'):  ct.SetAttr(TMP,'CycleTime', [])
@@ -188,8 +232,8 @@ def Run(ct,*args):
   g_trg31= g_pregrasp
 
   FollowXTraj(ct, xf_traj31, q_seed=ct.robot.Q(arm=arm), **ftargs_mv)
-  ct.robot.MoveGripper(g_trg31)
-  rospy.sleep(ctrl_sleep)
+  ct.robot.MoveGripper(g_trg31,blocking=True)
+  rospy.sleep(ctrl_sleep+0.2)
   if with_fv:  ct.Run('fv.hold','on',arm)
 
   ct.GetAttr(TMP,'CycleTime').append((rospy.Time.now()-t_start).to_sec())
