@@ -32,7 +32,7 @@ def Run(ct,*args):
   #ct.SetAttr('fv_ctrl','pickup2a_kd', [0.1,0.1, 2.5,  0.1,0.1,0.1])
   ct.SetAttr('fv_ctrl','pickup2a_kp', [1.0,1.0, 5.0,  1.0,1.0,1.0])
   ct.SetAttr('fv_ctrl','pickup2a_kd', [0.1,0.1, 1.0,  0.1,0.1,0.1])
-  ct.SetAttr('fv_ctrl','pickup2a_lowgain', 0.3)
+  ct.SetAttr('fv_ctrl','pickup2a_lowgain', 0.1)
   ct.SetAttr('fv_ctrl','pickup2a_gtimeout1', 50)
   ct.SetAttr('fv_ctrl','pickup2a_gtimeout2', 250)
   for arm in range(ct.robot.NumArms):

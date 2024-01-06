@@ -299,7 +299,7 @@ def PickupLoop(th_info, ct, arm, user_options):
   action_ctrlstep.NextState= ORIGIN_STATE
 
   sm.NewState('bring_test')
-  sm['bring_test'].EntryAction= lambda: SetZCtrl(0.02,'low')  #, ResetSlipDetect()
+  sm['bring_test'].EntryAction= lambda: SetZCtrl(0.025,'low')  #, ResetSlipDetect()
   sm['bring_test'].NewAction()
   sm['bring_test'].Actions[-1]= action_quit
   sm['bring_test'].NewAction()

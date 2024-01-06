@@ -47,7 +47,8 @@ def Run(ct,*args):
       keyposes[0].append([-0.32589942613710576, -1.4305718580829065, 1.4837894439697266, -1.6240127722369593, -1.5707820097552698, -3.467499558125631])
     elif ct.robot.Is('Gen3'):
       keyposes= [[]]
-      keyposes[0].append([0, 0.3, 0, 2.4, 0, -0.7, -1.57])
+      keyposes[0].append([0, 0, 0, 2.1, -3.1415, -0.6, 1.5708])
+      keyposes[0].append([0, 0.3, 0, 2.4, 0, -0.7, -1.5708])
     q_trg= keyposes[ct.robot.Arm][q_trg]
   assert(len(q_trg)==ct.robot.DoF())
   print 'Move to q:',q_trg

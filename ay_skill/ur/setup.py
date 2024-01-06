@@ -13,8 +13,13 @@ def Help():
   '''
 
 def Run(ct,*args):
-  robot_name= args[0] if len(args)>0 else 'UR3eThG'
+  try:
+    robot_code= rospy.get_param('robot_code')
+  except KeyError:
+    robot_code= 'NoRobot'
+  robot_name= args[0] if len(args)>0 else robot_code
   no_ask= args[1] if len(args)>1 else False
+  if robot_name is None:  robot_name= robot_code
   #fv_names,node_names= {'A':{RIGHT:'fvp_1_r',LEFT:'fvp_1_l'}},{'A':'fvp_1'}
   if not robot_name.endswith('_SIM'):
     command_list=[
