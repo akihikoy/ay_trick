@@ -128,6 +128,8 @@ class TVelCtrl(object):
     if sleep:  self.rate_adjuster.sleep()
 
   def Finish(self):
+    self.SetSpeedReq([0.0]*self.ct.robot.DoF(self.arm))
+    self.ct.srvp['joint_speeds'](self.speed_req)
     self.__class__.Delete(self.arm)
     if self.__class__.NumReferences(self.arm)>0:  return
     self.ct.DelSrvP('joint_speeds')

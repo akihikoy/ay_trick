@@ -9,17 +9,24 @@ def Help():
 def Run(ct,*args):
   arm= 0
   lw_xf= ct.GetAttr('wrist_r','lx')
-  xf_grasp= [0.396, 0.001, 0.084, -6.075900690479501e-05, 0.6008066570081552, 3.466204542040238e-05, 0.799394368257352]
-  xf_give= [0.45075966415428, 0.001034045354837597, 0.19945473685548198, -5.421697556891315e-05, 0.521255723151148, 7.925840489524081e-05, 0.8534005283926175]
-  xf_gup= xf_grasp+np.array([0,0,0.10, 0,0,0,0])
-  g_pregrasp= 0.05
-  g_grasp= 0.035
+  xf_grasp= [0.3001751420310972, 0.0034782857844863663, 0.13108151343221114, -0.0006227473634600952, 0.6348255443482752, 0.0005493296214830417, 0.7726550580081674]
+  xf_give= [0.4273953291726786, 0.017801955296955253, 0.2752075465354592, -1.4368092744227403e-05, 0.5202139762099631, 0.0003873556121128884, 0.8540358708537994]
+  xf_gup= xf_grasp+np.array([0,0,0.08, 0,0,0,0])
+  g_pregrasp= 0.08
+  g_grasp= 0.04
 
-  ct.robot.MoveToXI(xf_gup, x_ext=lw_xf, dt=4.0, arm=arm, blocking=True)
   ct.robot.MoveGripper(g_pregrasp, arm=arm, blocking=True)
-  ct.robot.MoveToXI(xf_grasp, x_ext=lw_xf, dt=3.0, arm=arm, blocking=True)
+  ct.robot.MoveToX(xf_gup, x_ext=lw_xf, dt=6.0, arm=arm, blocking=True)
+  ct.robot.MoveToX(xf_grasp, x_ext=lw_xf, dt=6.0, arm=arm, blocking=True)
   ct.robot.MoveGripper(g_grasp, arm=arm, blocking=True)
+  rospy.sleep(1.0)
   ct.Run('fv.pickup2b', 'once', arm)
-  ct.robot.MoveToXI(xf_give, x_ext=lw_xf, dt=3.0, arm=arm, blocking=True)
+  for i in range(20):
+    if ct.robot.actc.traj.get_state()==3:  break
+    print 'Robot is not in normal state.'
+    rospy.sleep(0.25)
+  if ct.robot.actc.traj.get_state()!=3:  return
+  ct.robot.MoveToX(xf_give, x_ext=lw_xf, dt=6.0, arm=arm, blocking=True)
   ct.Run('fv.openif','on',arm)
+  rospy.sleep(6.0)
 

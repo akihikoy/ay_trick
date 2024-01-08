@@ -412,9 +412,9 @@ def PickupLoop(th_info, ct, arm, user_options):
     sm.Run()
 
   finally:
-    ct.callback.fv_objinfo[ct.robot.ArmStrS(arm)]= [None,None]
-    l.velctrl.Step([0.0]*7)
+    l.velctrl.Step([0.0]*ct.robot.DoF(arm))
     l.velctrl.Finish()
+    ct.callback.fv_objinfo[ct.robot.ArmStrS(arm)]= [None,None]
     if options['resume_detect_obj']: ct.Run('fv.fv','start_detect_obj',arm)
 
   if options['keep_thread_after_exit']:
