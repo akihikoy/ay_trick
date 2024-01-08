@@ -321,10 +321,10 @@ def PickupLoop(th_info, ct, arm, user_options):
     sm['grasp_init'].NewAction()
     sm['grasp_init'].Actions[-1].Condition= lambda: l.g_motion==0
     sm['grasp_init'].Actions[-1].NextState= 'to_initial'
-  elif options['auto_stop']:
-    sm['grasp_init'].NewAction()
-    sm['grasp_init'].Actions[-1].Condition= lambda: l.g_motion==0
-    sm['grasp_init'].Actions[-1].NextState= EXIT_STATE
+  #elif options['auto_stop']:
+    #sm['grasp_init'].NewAction()
+    #sm['grasp_init'].Actions[-1].Condition= lambda: l.g_motion==0
+    #sm['grasp_init'].Actions[-1].NextState= EXIT_STATE
   sm['grasp_init'].ElseAction= action_ctrlstep
 
   sm.NewState('to_initial')
@@ -460,5 +460,5 @@ def Run(ct,*args):
     if not all(ct.Run('fv.fv','is_active',arm)):
       ct.Run('fv.fv','on',arm)
 
-    PickupLoop(None, ct, arm, options=user_options)
+    PickupLoop(None, ct, arm, user_options=user_options)
 
