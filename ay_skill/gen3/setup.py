@@ -30,6 +30,7 @@ def Run(ct,*args):
   else:
     command_list=[
       ['robot', robot_name],
+      ['fv.fv', 'on', 'all', {'A':{RIGHT:'fvp_1_r',LEFT:'fvp_1_l'}}],
       ['viz',''],
       ]
   for cmd in command_list:
