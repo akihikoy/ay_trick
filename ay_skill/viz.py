@@ -63,25 +63,26 @@ def VizLoop(th_info, ct, objs):
           primitives= ct.GetAttrOr(None, obj,'shape_primitives')
           if primitives is not None:
             alpha= 0.6
+            objcol= viz.ICol(6)  #viz.ICol(oid)
             for prm in primitives:
               if prm['kind'] in ('rtpkCylinder','rtpkHalfCylinder'):
                 #p_1= Transform(x_o,Vec(prm['pose'][:3])+[0.,0.,-0.5*prm['param'][1]])
                 #p_2= Transform(x_o,Vec(prm['pose'][:3])+[0.,0.,+0.5*prm['param'][1]])
                 p_1= Transform(x_o,Transform(prm['pose'],[0.,0.,-0.5*prm['param'][1]]))
                 p_2= Transform(x_o,Transform(prm['pose'],[0.,0.,+0.5*prm['param'][1]]))
-                mid= viz.AddCylinder(p_1,p_2, 2.0*prm['param'][0], alpha=alpha, rgb=viz.ICol(oid), mid=mid)
+                mid= viz.AddCylinder(p_1,p_2, 2.0*prm['param'][0], alpha=alpha, rgb=objcol, mid=mid)
               elif prm['kind'] in ('rtpkTube','rtpkHalfTube'):
                 #p_1= Transform(x_o,Vec(prm['pose'][:3])+[0.,0.,-0.5*prm['param'][2]])
                 #p_2= Transform(x_o,Vec(prm['pose'][:3])+[0.,0.,+0.5*prm['param'][2]])
                 p_1= Transform(x_o,Transform(prm['pose'],[0.,0.,-0.5*prm['param'][2]]))
                 p_2= Transform(x_o,Transform(prm['pose'],[0.,0.,+0.5*prm['param'][2]]))
-                mid= viz.AddCylinder(p_1,p_2, 2.0*prm['param'][0], alpha=alpha, rgb=viz.ICol(oid), mid=mid)
+                mid= viz.AddCylinder(p_1,p_2, 2.0*prm['param'][0], alpha=alpha, rgb=objcol, mid=mid)
               elif prm['kind']=='rtpkCuboid':
                 x_center= Transform(x_o,prm['pose'])
-                mid= viz.AddCube(x_center, scale=2.0*Vec(prm['param']), alpha=alpha, rgb=viz.ICol(oid), mid=mid)
+                mid= viz.AddCube(x_center, scale=2.0*Vec(prm['param']), alpha=alpha, rgb=objcol, mid=mid)
               elif prm['kind']=='rtpkRectTube':
                 x_center= Transform(x_o,prm['pose'])
-                mid= viz.AddCube(x_center, scale=2.0*Vec(prm['param'][:3]), alpha=alpha, rgb=viz.ICol(oid), mid=mid)
+                mid= viz.AddCube(x_center, scale=2.0*Vec(prm['param'][:3]), alpha=alpha, rgb=objcol, mid=mid)
           l_x_pour_e= ct.GetAttrOr(None, obj,'l_x_pour_e')
           if l_x_pour_e is not None:
             x_pour_e= Transform(x_o,l_x_pour_e)
