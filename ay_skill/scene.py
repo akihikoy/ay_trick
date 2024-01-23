@@ -140,20 +140,15 @@ def Run(ct,*args):
                 ('right_gripper_base','.r_gripper'),
                 ('right_upper_elbow_visual','torso'),
                 ('left_upper_elbow_visual','torso'))
-      elif ct.robot.Is('MotomanMotoMINI'):
+      elif ct.robot.Is('MotomanSG650'):
+        ign_combinations= (('base_link', 'link_1_s'),
+                           ('link_1_s', 'link_2_l'), ('link_2_l', 'link_1_s_cable'), ('link_2_l', 'link_4_r'), ('link_4_r', 'wrist_r') )
+      elif ct.robot.Is('Motoman'):
         ign_combinations= (('base_link', 'link_1_s'),
                            ('link_1_s', 'link_2_l'), ('link_2_l', 'link_3_u'), ('link_2_l', 'link_4_r'),
                            ('link_3_u', 'link_4_r'), ('link_5_b', 'link_4_r'), ('link_6_t', 'link_4_r'),
                            ('link_4_r', 'wrist_r'), ('link_6_t', 'link_5_b'),
                            ('link_5_b', 'wrist_r'), ('link_6_t', 'wrist_r'))
-      elif ct.robot.Is('MotomanSG650'):
-        ign_combinations= (('base_link', 'link_1_s'),
-                           ('link_1_s', 'link_2_l'), ('link_2_l', 'link_1_s_cable'), ('link_2_l', 'link_4_r'), ('link_4_r', 'wrist_r') )
-      elif ct.robot.Is('Motoman'):
-        ign_combinations= (('base_link', 'link_s'),
-                           ('link_s', 'link_l'),('link_l', 'link_e'),('link_e', 'link_u'),
-                           ('link_u', 'link_r'),('link_r', 'link_b'),('link_b', 'link_t'),
-                           ('link_b', 'wrist_r'),('link_t', 'wrist_r'))
       elif ct.robot.Is('Mikata'):
         ign_combinations= (('base_link','link_2'),('link_2','link_3'),('link_3','link_4'),('link_4','link_5'),
                            ('link_5','right_gripper'),('link_5','left_gripper'),('right_gripper','left_gripper'))
