@@ -2,7 +2,7 @@
 from core_tool import *
 import rospkg
 sys.path.append(os.path.join(rospkg.RosPack().get_path('ay_util'),'scripts'))
-from ur_dashboard_gui import TURManager, ur_dashboard_msgs, ur_msgs
+from proc_manager_ur import TURManager, ur_dashboard_msgs, ur_msgs
 
 def Help():
   return '''UR manager utility.  Provide an interface to the dashboard.
