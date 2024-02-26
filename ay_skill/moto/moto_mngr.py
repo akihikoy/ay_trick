@@ -92,7 +92,7 @@ def Run(ct,*args):
     ct.srvp.robot_disable()  #This is necessary due to a bug.
     rospy.sleep(0.1)
     ct.srvp.robot_enable()
-    rospy.sleep(0.1)
+    rospy.sleep(0.2)
 
   elif command=='disable':
     if ct.robot.Is('sim'):  return
