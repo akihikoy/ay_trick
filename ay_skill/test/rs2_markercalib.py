@@ -8,16 +8,42 @@ import cv2
 def Help():
   return '''RealSense2 camera pose calibration tool with ArUco markers.
   Usage:  rs2_markercalib ...
+
+  Note: Test with ROSbag
   '''
 
-def VizMarker(ct, x_marker):
-  viz= ct.viz.rs2_markercalib
-
+def VizMarker(ct, viz, x_marker):
   mid= 0
   alpha= 0.8
   mid= viz.AddCoord(x_marker, scale=[0.1,0.01], alpha=alpha, mid=mid)
 
   viz.Publish()
+
+def OptimizeRSPose(ct, sample_list):
+  import scipy.optimize
+  def rs_pose_to_x(pose_rs):
+    x_rs= list(pose_rs[:3]) + list(RotToQ(Rodrigues(pose_rs[3:])))
+    return x_rs
+  def loss_diff_x(diff_x):
+    pos_err= np.linalg.norm(diff_x[:3])**2
+    rot_err= np.linalg.norm(diff_x[3:])**2
+    #print pos_err, rot_err
+    return 30.0*pos_err+rot_err
+  def pose_error(pose_rs):
+    x_rs= rs_pose_to_x(pose_rs)
+    return sum(loss_diff_x(DiffX(x_marker_robot,Transform(x_rs,x_marker_rs)))
+               for (x_marker_robot,x_marker_rs) in sample_list)
+
+  print sample_list
+  # Minimize the pose_error
+  xmin,xmax= [-5,-5,-5, -5,-5,-5],[5,5,5, 5,5,5]
+  tol= 1.0e-5
+  res= scipy.optimize.differential_evolution(pose_error, np.array([xmin,xmax]).T, strategy='best1bin', maxiter=300, popsize=10, tol=tol, mutation=(0.5, 1), recombination=0.7)
+  print res
+  x_rs= rs_pose_to_x(res.x)
+  print 'x_rs=',x_rs
+  return x_rs
+
 
 def ImageCallback(ct, msg, fmt):
   img= CvBridge().imgmsg_to_cv2(msg, fmt)
@@ -29,32 +55,45 @@ def ImageCallback(ct, msg, fmt):
   if msg.header.seq%2!=0:  return  #Slip for speed up
 
   frame= img_viz
-  print 'frame=',frame.shape
-  print 'dtype=',frame.dtype
+  #print 'frame=',frame.shape
+  #print 'dtype=',frame.dtype
 
   corners, ids, rejectedImgPoints= cv2.aruco.detectMarkers(frame, ct.GetAttr(TMP,'aruco','board').dictionary, parameters=ct.GetAttr(TMP,'aruco','parameters'))
   if ids is not None and len(ids)>0:
     #print 'corners:', corners
     P,K,D,R= ct.GetAttr(TMP,'cam_info')
     retval, rvec, tvec= cv2.aruco.estimatePoseBoard(corners, ids, ct.GetAttr(TMP,'aruco','board'), P, D)
-    print 'retval=', retval
-    print 'rvec=', rvec
-    print 'tvec=', tvec
-
-    #Convert to [x,y,z,quaternion] form:
-    Q_base= RotToQ(ExyzToRot([1,0,0],[0,1,0],[0,0,1]))
-    #Q_base= RotToQ(ExyzToRot([0,0,-1],[1,0,0],[0,-1,0]))
-    x_marker= list(tvec) + list(MultiplyQ(RotToQ(Rodrigues(rvec)),Q_base))
+    #print 'retval=', retval
+    #print 'rvec=', rvec
+    #print 'tvec=', tvec
 
     #Draw the detection on an image:
     cv2.aruco.drawDetectedMarkers(frame, corners, ids)
     #cv2.drawFrameAxes(frame, P, D, rvec, tvec, length=0.05)  #For OpenCV 3.4+
     cv2.aruco.drawAxis(frame, P, D, rvec, tvec, length=0.05);
 
+    #Convert to [x,y,z,quaternion] form:
+    tvec,rvec= tvec.ravel(), rvec.ravel()
+    Q_base= RotToQ(ExyzToRot([1,0,0],[0,1,0],[0,0,1]))
+    #Q_base= RotToQ(ExyzToRot([0,0,-1],[1,0,0],[0,-1,0]))
+    x_marker_rs= list(tvec) + list(MultiplyQ(RotToQ(Rodrigues(rvec)),Q_base))
+
     #Visualize the detection with RViz:
-    VizMarker(ct, x_marker)
+    VizMarker(ct, ct.viz.rs2_markercalib_rs, x_marker_rs)
 
   ct.SetAttr(TMP,'rs_image', frame)
+
+  #Visualize the marker pose estimation from the robot-marker model.
+  if np.max(np.abs((ct.robot.Q())))>0:
+    lw_Q_marker= RotToQ(ExyzToRot([0,1,0],[0,0,1],[1,0,0]))
+    lw_x_marker= [0.039, -0.080, 0.018] + list(lw_Q_marker)
+    x_marker_robot= ct.robot.FK(x_ext=lw_x_marker)
+    VizMarker(ct, ct.viz.rs2_markercalib_robot, x_marker_robot)
+
+    if ct.GetAttr(TMP,'rs_sample_req'):
+      ct.SetAttr(TMP,'rs_sample_req', False)
+      ct.GetAttr(TMP,'rs_sample_list').append((x_marker_robot, x_marker_rs))
+      OptimizeRSPose(ct, ct.GetAttr(TMP,'rs_sample_list'))
 
 
 def Run(ct,*args):
@@ -86,23 +125,29 @@ def Run(ct,*args):
   P= P[:3,:3]
   ct.SetAttr(TMP,'cam_info', (P,K,D,R))
 
+  ct.SetAttr(TMP,'rs_sample_req', False)
+  ct.SetAttr(TMP,'rs_sample_list', [])
+
   frame= 'camera_color_optical_frame'
-  ct.viz.rs2_markercalib= TSimpleVisualizerArray(rospy.Duration(), name_space='visualizer_test', frame=frame)
-  viz= ct.viz.rs2_markercalib
-  viz.DeleteAllMarkers()
-  viz.Reset()
+  ct.viz.rs2_markercalib_rs= TSimpleVisualizerArray(rospy.Duration(), name_space='viz_rs2_markercalib_rs', frame=frame)
+  ct.viz.rs2_markercalib_robot= TSimpleVisualizerArray(rospy.Duration(), name_space='viz_rs2_markercalib_robot', frame=ct.robot.BaseFrame)
+  for viz in (ct.viz.rs2_markercalib_rs, ct.viz.rs2_markercalib_robot):
+    viz.DeleteAllMarkers()
+    viz.Reset()
 
   ct.SetAttr(TMP,'rs_image', None)
   ct.AddSub('rs_image', topic, sensor_msgs.msg.Image, lambda msg:ImageCallback(ct,msg,fmt))
 
-  rate_adjuster= rospy.Rate(20)
   try:
+    rate_adjuster= rospy.Rate(20)
     while not rospy.is_shutdown():
       if ct.GetAttr(TMP,'rs_image') is not None:
         cv2.imshow('marker_detection',ct.GetAttr(TMP,'rs_image'))
       key= cv2.waitKey(1)&0xFF
       if key==ord('q'):
         break
+      elif key==ord(' '):
+        ct.SetAttr(TMP,'rs_sample_req', True)
       rate_adjuster.sleep()
 
   finally:
