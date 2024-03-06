@@ -5,6 +5,9 @@ import sensor_msgs.msg
 from cv_bridge import CvBridge, CvBridgeError
 import cv2
 
+#NOTE This config is needed to remove a warning: (marker_detection:11998): WARNING **: xxxxx: AT-SPI: Could not obtain desktop path or name
+os.environ['NO_AT_BRIDGE'] = '1'
+
 def Help():
   return '''RealSense2 camera pose calibration tool with ArUco markers.
   Usage:  rs2_markercalib ...
