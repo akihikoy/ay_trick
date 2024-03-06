@@ -109,10 +109,19 @@ def ImageCallback(ct, msg, fmt):
     if ct.GetAttr(TMP,'rs_sample_req'):
       ct.SetAttr(TMP,'rs_sample_req', False)
       ct.GetAttr(TMP,'rs_sample_list').append((x_marker_robot, x_marker_rs))
-      #Executing the optimization to obtain the RS pose in the robot frame.
-      x_rs= OptimizeRSPose(ct, ct.GetAttr(TMP,'rs_sample_list'))
-      print 'Optimization completed.'
-      print '  x_rs=',x_rs
+
+  if ct.GetAttr(TMP,'rs_optimization_req'):
+    ct.SetAttr(TMP,'rs_optimization_req', False)
+    #Executing the optimization to obtain the RS pose in the robot frame.
+    x_rs= OptimizeRSPose(ct, ct.GetAttr(TMP,'rs_sample_list'))
+    print 'Optimization completed.'
+    print '  x_rs=',x_rs
+
+  if ct.GetAttr(TMP,'rs_print_req'):
+    ct.SetAttr(TMP,'rs_print_req', False)
+    x_cam= TfOnce(ct.robot.BaseFrame, 'camera_color_optical_frame')
+    print 'x_marker_robot=',x_marker_robot
+    print 'x_marker_rs=',Transform(x_cam, x_marker_rs)
 
 
 def Run(ct,*args):
@@ -146,6 +155,8 @@ def Run(ct,*args):
 
   ct.SetAttr(TMP,'rs_sample_req', False)
   ct.SetAttr(TMP,'rs_sample_list', [])
+  ct.SetAttr(TMP,'rs_optimization_req', False)
+  ct.SetAttr(TMP,'rs_print_req', False)
 
   frame= 'camera_color_optical_frame'
   ct.viz.rs2_markercalib_rs= TSimpleVisualizerArray(rospy.Duration(), name_space='viz_rs2_markercalib_rs', frame=frame)
@@ -158,7 +169,12 @@ def Run(ct,*args):
   ct.AddSub('rs_image', topic, sensor_msgs.msg.Image, lambda msg:ImageCallback(ct,msg,fmt))
 
   try:
-    print 'Press q to quit, space to add the current observation to the sample (and run the optimization).'
+    print '''Keyboard operation:
+    - q: quit.
+    - space: add the current observation to the sample (and run the optimization).
+    - o: run the optimization.
+    - p: print the current observation.
+'''
     rate_adjuster= rospy.Rate(20)
     while not rospy.is_shutdown():
       if ct.GetAttr(TMP,'rs_image') is not None:
@@ -168,6 +184,11 @@ def Run(ct,*args):
         break
       elif key==ord(' '):
         ct.SetAttr(TMP,'rs_sample_req', True)
+        ct.SetAttr(TMP,'rs_optimization_req', True)
+      elif key==ord('o'):
+        ct.SetAttr(TMP,'rs_optimization_req', True)
+      elif key==ord('p'):
+        ct.SetAttr(TMP,'rs_print_req', True)
       rate_adjuster.sleep()
 
   finally:
