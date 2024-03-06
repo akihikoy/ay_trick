@@ -27,21 +27,32 @@ def OptimizeRSPose(ct, sample_list):
   def loss_diff_x(diff_x):
     pos_err= np.linalg.norm(diff_x[:3])**2
     rot_err= np.linalg.norm(diff_x[3:])**2
+    err= 30.0*pos_err+rot_err
     #print pos_err, rot_err
-    return 30.0*pos_err+rot_err
+    #print '{:.2e}'.format(err),
+    return err
+  num_f_eval= [0]
   def pose_error(pose_rs):
     x_rs= rs_pose_to_x(pose_rs)
-    return sum(loss_diff_x(DiffX(x_marker_robot,Transform(x_rs,x_marker_rs)))
-               for (x_marker_robot,x_marker_rs) in sample_list)
+    err= sum(loss_diff_x(DiffX(x_marker_robot,Transform(x_rs,x_marker_rs)))
+             for (x_marker_robot,x_marker_rs) in sample_list)
+    if num_f_eval[0]%100==0:
+      sys.stderr.write(' {:.2e}'.format(err))
+      sys.stderr.flush()
+    num_f_eval[0]+= 1
+    return err
 
-  print sample_list
+  print '##OptimizeRSPose##'
+  print 'sample_list [(x_marker_robot,x_marker_rs)]:'
+  for (x_marker_robot,x_marker_rs) in sample_list:  print ' ',(x_marker_robot,x_marker_rs)
   # Minimize the pose_error
   xmin,xmax= [-5,-5,-5, -5,-5,-5],[5,5,5, 5,5,5]
   tol= 1.0e-5
+  print 'Optimizing...'
   res= scipy.optimize.differential_evolution(pose_error, np.array([xmin,xmax]).T, strategy='best1bin', maxiter=300, popsize=10, tol=tol, mutation=(0.5, 1), recombination=0.7)
-  print res
+  print ''
+  print 'Optimization result:\n',res
   x_rs= rs_pose_to_x(res.x)
-  print 'x_rs=',x_rs
   return x_rs
 
 
@@ -74,26 +85,31 @@ def ImageCallback(ct, msg, fmt):
 
     #Convert to [x,y,z,quaternion] form:
     tvec,rvec= tvec.ravel(), rvec.ravel()
-    Q_base= RotToQ(ExyzToRot([1,0,0],[0,1,0],[0,0,1]))
-    #Q_base= RotToQ(ExyzToRot([0,0,-1],[1,0,0],[0,-1,0]))
-    x_marker_rs= list(tvec) + list(MultiplyQ(RotToQ(Rodrigues(rvec)),Q_base))
+    x_marker_rs= list(tvec) + list(RotToQ(Rodrigues(rvec)))
 
     #Visualize the detection with RViz:
     VizMarker(ct, ct.viz.rs2_markercalib_rs, x_marker_rs)
 
   ct.SetAttr(TMP,'rs_image', frame)
 
-  #Visualize the marker pose estimation from the robot-marker model.
-  if np.max(np.abs((ct.robot.Q())))>0:
+  if np.max(np.abs((ct.robot.Q())))>1e-3:
+    #lw_x_marker: Marker pose in the wrist frame from a CAD model.
+    #  0.034: From the wrist plane to the base point of RHP12RNGripper.
     lw_Q_marker= RotToQ(ExyzToRot([0,1,0],[0,0,1],[1,0,0]))
-    lw_x_marker= [0.039, -0.080, 0.018] + list(lw_Q_marker)
+    lw_x_marker= [0.039, -0.080, 0.018+0.034] + list(lw_Q_marker)
     x_marker_robot= ct.robot.FK(x_ext=lw_x_marker)
+
+    #Visualize the marker pose estimation from the robot-marker model.
     VizMarker(ct, ct.viz.rs2_markercalib_robot, x_marker_robot)
 
+    #If there is a request of sampling, two marker pose estimations from RS and the robot frame are stored.
     if ct.GetAttr(TMP,'rs_sample_req'):
       ct.SetAttr(TMP,'rs_sample_req', False)
       ct.GetAttr(TMP,'rs_sample_list').append((x_marker_robot, x_marker_rs))
-      OptimizeRSPose(ct, ct.GetAttr(TMP,'rs_sample_list'))
+      #Executing the optimization to obtain the RS pose in the robot frame.
+      x_rs= OptimizeRSPose(ct, ct.GetAttr(TMP,'rs_sample_list'))
+      print 'Optimization completed.'
+      print '  x_rs=',x_rs
 
 
 def Run(ct,*args):
@@ -139,6 +155,7 @@ def Run(ct,*args):
   ct.AddSub('rs_image', topic, sensor_msgs.msg.Image, lambda msg:ImageCallback(ct,msg,fmt))
 
   try:
+    print 'Press q to quit, space to add the current observation to the sample (and run the optimization).'
     rate_adjuster= rospy.Rate(20)
     while not rospy.is_shutdown():
       if ct.GetAttr(TMP,'rs_image') is not None:
