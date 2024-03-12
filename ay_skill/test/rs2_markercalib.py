@@ -15,10 +15,10 @@ def Help():
   Note: Test with ROSbag
   '''
 
-def VizMarker(ct, viz, x_marker):
+def VizMarker(ct, viz, x_marker, scale=[0.1,0.01]):
   mid= 0
   alpha= 0.8
-  mid= viz.AddCoord(x_marker, scale=[0.1,0.01], alpha=alpha, mid=mid)
+  mid= viz.AddCoord(x_marker, scale=scale, alpha=alpha, mid=mid)
 
   viz.Publish()
 
@@ -91,7 +91,7 @@ def ImageCallback(ct, msg, fmt):
     x_marker_rs= list(tvec) + list(RotToQ(Rodrigues(rvec)))
 
     #Visualize the detection with RViz:
-    VizMarker(ct, ct.viz.rs2_markercalib_rs, x_marker_rs)
+    VizMarker(ct, ct.viz.rs2_markercalib_rs, x_marker_rs, scale=[0.1,0.002])
 
   ct.SetAttr(TMP,'rs_image', frame)
 
@@ -103,7 +103,7 @@ def ImageCallback(ct, msg, fmt):
     x_marker_robot= ct.robot.FK(x_ext=lw_x_marker)
 
     #Visualize the marker pose estimation from the robot-marker model.
-    VizMarker(ct, ct.viz.rs2_markercalib_robot, x_marker_robot)
+    VizMarker(ct, ct.viz.rs2_markercalib_robot, x_marker_robot, scale=[0.1,0.001])
 
     #If there is a request of sampling, two marker pose estimations from RS and the robot frame are stored.
     if ct.GetAttr(TMP,'rs_sample_req'):
