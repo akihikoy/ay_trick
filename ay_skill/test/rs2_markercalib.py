@@ -46,13 +46,13 @@ def OptimizeRSPose(ct, sample_list):
     return err
 
   print '##OptimizeRSPose##'
-  print 'sample_list [(x_marker_robot,x_marker_rs)]:'
-  for (x_marker_robot,x_marker_rs) in sample_list:  print ' ',(x_marker_robot,x_marker_rs)
+  #print 'sample_list [(x_marker_robot,x_marker_rs)]:'
+  #for (x_marker_robot,x_marker_rs) in sample_list:  print ' ',(x_marker_robot,x_marker_rs)
   # Minimize the pose_error
   xmin,xmax= [-5,-5,-5, -5,-5,-5],[5,5,5, 5,5,5]
-  tol= 1.0e-5
+  tol= 1.0e-6
   print 'Optimizing...'
-  res= scipy.optimize.differential_evolution(pose_error, np.array([xmin,xmax]).T, strategy='best1bin', maxiter=300, popsize=10, tol=tol, mutation=(0.5, 1), recombination=0.7)
+  res= scipy.optimize.differential_evolution(pose_error, np.array([xmin,xmax]).T, strategy='best1bin', maxiter=300, popsize=20, tol=tol, mutation=(0.5, 1), recombination=0.7)
   print ''
   print 'Optimization result:\n',res
   x_rs= rs_pose_to_x(res.x)
@@ -109,6 +109,12 @@ def ImageCallback(ct, msg, fmt):
     if ct.GetAttr(TMP,'rs_sample_req'):
       ct.SetAttr(TMP,'rs_sample_req', False)
       ct.GetAttr(TMP,'rs_sample_list').append((x_marker_robot, x_marker_rs))
+      print 'Updated the sample list.'
+      print 'sample_list [(x_marker_robot,x_marker_rs)]:'
+      print '['
+      for (x_marker_robot,x_marker_rs) in ct.GetAttr(TMP,'rs_sample_list'):
+        print '  {},'.format([x_marker_robot,x_marker_rs])
+      print ']'
 
   if ct.GetAttr(TMP,'rs_optimization_req'):
     ct.SetAttr(TMP,'rs_optimization_req', False)
@@ -154,9 +160,19 @@ def Run(ct,*args):
   ct.SetAttr(TMP,'cam_info', (P,K,D,R))
 
   ct.SetAttr(TMP,'rs_sample_req', False)
-  ct.SetAttr(TMP,'rs_sample_list', [])
   ct.SetAttr(TMP,'rs_optimization_req', False)
   ct.SetAttr(TMP,'rs_print_req', False)
+
+  if ct.HasAttr(TMP,'rs_sample_list'):
+    print 'Previous calibration data found. Do you want to continue from that?'
+    print '  # of samples:',len(ct.GetAttr(TMP,'rs_sample_list'))
+    if AskYesNo():
+      print 'Keeping the sample list'
+    else:
+      print 'Resetting the sample list'
+      ct.SetAttr(TMP,'rs_sample_list', [])
+  else:
+    ct.SetAttr(TMP,'rs_sample_list', [])
 
   frame= 'camera_color_optical_frame'
   ct.viz.rs2_markercalib_rs= TSimpleVisualizerArray(rospy.Duration(), name_space='viz_rs2_markercalib_rs', frame=frame)
@@ -171,8 +187,9 @@ def Run(ct,*args):
   try:
     print '''Keyboard operation:
     - q: quit.
-    - space: add the current observation to the sample (and run the optimization).
+    - space: add the current observation to the sample.
     - o: run the optimization.
+    - a: add the current observation to the sample and run the optimization.
     - p: print the current observation.
 '''
     rate_adjuster= rospy.Rate(20)
@@ -183,6 +200,8 @@ def Run(ct,*args):
       if key==ord('q'):
         break
       elif key==ord(' '):
+        ct.SetAttr(TMP,'rs_sample_req', True)
+      elif key==ord('a'):
         ct.SetAttr(TMP,'rs_sample_req', True)
         ct.SetAttr(TMP,'rs_optimization_req', True)
       elif key==ord('o'):
