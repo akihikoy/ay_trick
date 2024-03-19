@@ -58,6 +58,42 @@ def OptimizeRSPose(ct, sample_list):
   x_rs= rs_pose_to_x(res.x)
   return x_rs
 
+def OptimizeRSPoseWithFixedQ(ct, sample_list, q_fixed):
+  import scipy.optimize
+  def rs_pose_to_x(pose_rs):
+    x_rs= list(pose_rs[:3]) + list(q_fixed)
+    return x_rs
+  def loss_diff_x(diff_x):
+    pos_err= np.linalg.norm(diff_x[:3])**2
+    rot_err= 0.0
+    err= 30.0*pos_err+rot_err
+    #print pos_err, rot_err
+    #print '{:.2e}'.format(err),
+    return err
+  num_f_eval= [0]
+  def pose_error(pose_rs):
+    x_rs= rs_pose_to_x(pose_rs)
+    err= sum(loss_diff_x(DiffX(x_marker_robot,Transform(x_rs,x_marker_rs)))
+             for (x_marker_robot,x_marker_rs) in sample_list)
+    if num_f_eval[0]%100==0:
+      sys.stderr.write(' {:.2e}'.format(err))
+      sys.stderr.flush()
+    num_f_eval[0]+= 1
+    return err
+
+  print '##OptimizeRSPoseWithFixedQ##'
+  #print 'sample_list [(x_marker_robot,x_marker_rs)]:'
+  #for (x_marker_robot,x_marker_rs) in sample_list:  print ' ',(x_marker_robot,x_marker_rs)
+  # Minimize the pose_error
+  xmin,xmax= [-5,-5,-5],[5,5,5]
+  tol= 1.0e-6
+  print 'Optimizing...'
+  res= scipy.optimize.differential_evolution(pose_error, np.array([xmin,xmax]).T, strategy='best1bin', maxiter=300, popsize=20, tol=tol, mutation=(0.5, 1), recombination=0.7)
+  print ''
+  print 'Optimization result:\n',res
+  x_rs= rs_pose_to_x(res.x)
+  return x_rs
+
 
 def ImageCallback(ct, msg, fmt):
   img= CvBridge().imgmsg_to_cv2(msg, fmt)
@@ -100,6 +136,11 @@ def ImageCallback(ct, msg, fmt):
     #  0.034: From the wrist plane to the base point of RHP12RNGripper.
     lw_Q_marker= RotToQ(ExyzToRot([0,1,0],[0,0,1],[1,0,0]))
     lw_x_marker= [0.039, -0.080, 0.018+0.034] + list(lw_Q_marker)
+
+    ##(TEST)25deg angled RH-P12-RN with angled marker fixture.
+    #lw_Q_marker= MultiplyQ(QFromAxisAngle([0,1,0],-25./180.*np.pi),RotToQ(ExyzToRot([0,-1,0],[-1,0,0],[0,0,-1]))).tolist()
+    #lw_x_marker= [-0.007484, 0.07970, 0.033723] + list(lw_Q_marker)
+
     x_marker_robot= ct.robot.FK(x_ext=lw_x_marker)
 
     #Visualize the marker pose estimation from the robot-marker model.
@@ -122,6 +163,11 @@ def ImageCallback(ct, msg, fmt):
     x_rs= OptimizeRSPose(ct, ct.GetAttr(TMP,'rs_sample_list'))
     print 'Optimization completed.'
     print '  x_rs=',x_rs
+    ##TEST: Optimization with fixed Q:
+    #q_fixed= [0.7070980597795835, -0.7068790570623428, -0.01794432184991827, 0.003511958990169429]
+    #x_rs= OptimizeRSPoseWithFixedQ(ct, ct.GetAttr(TMP,'rs_sample_list'), q_fixed)
+    #print 'Optimization completed.'
+    #print '  x_rs=',x_rs
 
   if ct.GetAttr(TMP,'rs_print_req'):
     ct.SetAttr(TMP,'rs_print_req', False)
