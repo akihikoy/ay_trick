@@ -32,6 +32,10 @@ ROBOT_NAME_ALIAS={
   'motogp7s'   :'MotomanGP7_SIM',
   'motogp7thg' :'MotomanGP7ThG',
   'motogp7thgs':'MotomanGP7ThG_SIM',
+  'motogp8'    :'MotomanGP8',
+  'motogp8s'   :'MotomanGP8_SIM',
+  'motogp8thg' :'MotomanGP8ThG',
+  'motogp8thgs':'MotomanGP8ThG_SIM',
   'motohc10sdtp'    :'MotomanHC10SDTP',
   'motohc10sdtps'   :'MotomanHC10SDTP_SIM',
   'motohc10sdtpthg' :'MotomanHC10SDTPThG',
@@ -187,6 +191,13 @@ def Run(ct,*args):
   elif robot in ('MotomanGP7ThG', 'MotomanGP7ThG_SIM'):
     mod= SmartImportReload('ay_py.ros.rbt_motothg')
     ct.robot= mod.TRobotMotomanThG(name='MotomanGP7ThG', is_sim=is_sim)
+
+  elif robot in ('MotomanGP8', 'MotomanGP8_SIM'):
+    mod= SmartImportReload('ay_py.ros.rbt_moto')
+    ct.robot= mod.TRobotMotoman(name='MotomanGP8', is_sim=is_sim)
+  elif robot in ('MotomanGP8ThG', 'MotomanGP8ThG_SIM'):
+    mod= SmartImportReload('ay_py.ros.rbt_motothg')
+    ct.robot= mod.TRobotMotomanThG(name='MotomanGP8ThG', is_sim=is_sim)
 
   elif robot in ('MotomanHC10SDTP', 'MotomanHC10SDTP_SIM'):
     mod= SmartImportReload('ay_py.ros.rbt_moto')
@@ -344,6 +355,8 @@ def Run(ct,*args):
     ct.AddDictAttr(LoadYAML(model_dir+'/robot/gripper_motomansg650_thg.yaml'))
   elif ct.robot.Is('MotomanGP7ThG'):
     ct.AddDictAttr(LoadYAML(model_dir+'/robot/gripper_motomangp7_thg.yaml'))
+  elif ct.robot.Is('MotomanGP8ThG'):
+    ct.AddDictAttr(LoadYAML(model_dir+'/robot/gripper_motomangp8_thg.yaml'))
   elif ct.robot.Is('MotomanHC10SDTPThG'):
     ct.AddDictAttr(LoadYAML(model_dir+'/robot/gripper_motomanhc10sdtp_thg.yaml'))
   elif ct.robot.Is('Mikata'):
