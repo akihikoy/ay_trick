@@ -133,13 +133,7 @@ def ImageCallback(ct, msg, fmt):
 
   if np.max(np.abs((ct.robot.Q())))>1e-3:
     #lw_x_marker: Marker pose in the wrist frame from a CAD model.
-    #  0.034: From the wrist plane to the base point of RHP12RNGripper.
-    lw_Q_marker= RotToQ(ExyzToRot([0,1,0],[0,0,1],[1,0,0]))
-    lw_x_marker= [0.039, -0.080, 0.018+0.034] + list(lw_Q_marker)
-
-    ##(TEST)25deg angled RH-P12-RN with angled marker fixture.
-    #lw_Q_marker= MultiplyQ(QFromAxisAngle([0,1,0],-25./180.*np.pi),RotToQ(ExyzToRot([0,-1,0],[-1,0,0],[0,0,-1]))).tolist()
-    #lw_x_marker= [-0.007484, 0.07970, 0.033723] + list(lw_Q_marker)
+    lw_x_marker= ct.GetAttr(TMP,'lw_x_marker')
 
     x_marker_robot= ct.robot.FK(x_ext=lw_x_marker)
 
@@ -192,6 +186,25 @@ def Run(ct,*args):
   #Q_base= RotToQ(ExyzToRot([0,0,-1],[1,0,0],[0,-1,0]))
   x= list(tvec) + list(MultiplyQ(RotToQ(Rodrigues(rvec)),Q_base))
   '''
+
+  #lw_x_marker: Marker pose in the wrist frame from a CAD model.
+  if not ct.HasAttr(TMP,'lw_x_marker') and ct.robot.Is('UR'):
+    #  0.018: From the wrist plane to the base point of RHP12RNGripper.
+    lw_Q_marker= RotToQ(ExyzToRot([-1,0,0],[0,0,1],[0,1,0]))
+    lw_x_marker= [0.080, 0.039, 0.018+0.018] + list(lw_Q_marker)
+    ct.SetAttr(TMP,'lw_x_marker', lw_x_marker)
+  elif not ct.HasAttr(TMP,'lw_x_marker') and ct.robot.Is('Motoman'):
+    #  0.034: From the wrist plane to the base point of RHP12RNGripper.
+    lw_Q_marker= RotToQ(ExyzToRot([0,1,0],[0,0,1],[1,0,0]))
+    lw_x_marker= [0.039, -0.080, 0.018+0.034] + list(lw_Q_marker)
+    ct.SetAttr(TMP,'lw_x_marker', lw_x_marker)
+  if not ct.HasAttr(TMP,'lw_x_marker'):
+    raise Exception('Attribute TMP:lw_x_marker is not defined.')
+
+  ##(TEST)25deg angled RH-P12-RN with angled marker fixture.
+  #lw_Q_marker= MultiplyQ(QFromAxisAngle([0,1,0],-25./180.*np.pi),RotToQ(ExyzToRot([0,-1,0],[-1,0,0],[0,0,-1]))).tolist()
+  #lw_x_marker= [-0.007484, 0.07970, 0.033723] + list(lw_Q_marker)
+
 
   dictionary= cv2.aruco.getPredefinedDictionary(cv2.aruco.DICT_6X6_250)
   parameters= cv2.aruco.DetectorParameters_create()
