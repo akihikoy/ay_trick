@@ -56,6 +56,18 @@ def Run(ct,*args):
       raise Exception('Not connected to ur_mngr')
     return ct.GetAttr(TMP,'ur_mngr').ur_safety_mode==ur_dashboard_msgs.msg.SafetyMode.PROTECTIVE_STOP
 
+  elif command=='is_robot_emergency_stop':
+    if ct.robot.Is('sim'):  return False
+    if not ct.HasAttr(TMP,'ur_mngr'):
+      raise Exception('Not connected to ur_mngr')
+    return ct.GetAttr(TMP,'ur_mngr').ur_safety_mode==ur_dashboard_msgs.msg.SafetyMode.ROBOT_EMERGENCY_STOP
+
+  elif command=='is_power_off':
+    if ct.robot.Is('sim'):  return False
+    if not ct.HasAttr(TMP,'ur_mngr'):
+      raise Exception('Not connected to ur_mngr')
+    return ct.GetAttr(TMP,'ur_mngr').ur_safety_mode==ur_dashboard_msgs.msg.SafetyMode.NORMAL and ct.GetAttr(TMP,'ur_mngr').ur_robot_mode==ur_dashboard_msgs.msg.RobotMode.POWER_OFF
+
   elif command=='recover_from_protective_stop':
     if ct.robot.Is('sim'):  return
     if not ct.HasAttr(TMP,'ur_mngr'):
@@ -78,6 +90,22 @@ def Run(ct,*args):
     rospy.sleep(0.2)
     ur_mngr.RunURDashboard('play')
     #rospy.sleep(0.2)
+    ur_mngr.WaitForProgramRunning(True)
+
+  elif command=='power_on':
+    if ct.robot.Is('sim'):  return
+    if not ct.HasAttr(TMP,'ur_mngr'):
+      raise Exception('Not connected to ur_mngr')
+    ur_mngr= ct.GetAttr(TMP,'ur_mngr')
+    if ur_mngr.ur_safety_mode!=ur_dashboard_msgs.msg.SafetyMode.NORMAL or ur_mngr.ur_robot_mode!=ur_dashboard_msgs.msg.RobotMode.POWER_OFF:
+      raise Exception('UR mode is not POWER_OFF.')
+    ur_mngr.WaitForRobotMode(ur_dashboard_msgs.msg.RobotMode.POWER_OFF)
+    ur_mngr.RunURDashboard('power_on')
+    ur_mngr.WaitForRobotMode(ur_dashboard_msgs.msg.RobotMode.IDLE)
+    ur_mngr.RunURDashboard('brake_release')
+    ur_mngr.WaitForRobotMode(ur_dashboard_msgs.msg.RobotMode.RUNNING)
+    rospy.sleep(0.2)
+    ur_mngr.RunURDashboard('play')
     ur_mngr.WaitForProgramRunning(True)
 
   else:
