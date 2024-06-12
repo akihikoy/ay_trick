@@ -98,3 +98,9 @@ def FollowGTraj(ct, g_traj, t_traj, arm=None, blocking=False, callback=None, mod
     raise Exception('FollowGTraj: Unknown mode: {}'.format(mode))
   if blocking==True:
     ct.thread_manager.Join('follow_gripper_traj')
+
+#Stop the gripper trajectory control of FollowGTraj.
+def StopGTraj(ct):
+  ct.thread_manager.Stop('follow_gripper_traj')
+  ct.thread_manager.Join('follow_gripper_traj')
+
