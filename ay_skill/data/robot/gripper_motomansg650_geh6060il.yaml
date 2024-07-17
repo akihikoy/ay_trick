@@ -1,0 +1,19 @@
+#GEH6000ILGripper of MotomanSG650
+#FIXME: Change names: wrist_* --> grip_*
+
+#NOTE: From The base point of GEH6000IL-RHP12RN-Frange to the fingertip of FV+: 165.504mm.
+#NOTE: From the wrist plane to the base point of GEH6000IL-RHP12RN-Frange: 5.00mm.
+
+#Gripper
+wrist_r:
+  #Kinematics information:
+  kinematics_chain:
+    #Right or left arm:
+    parent_arm: r
+  #Gripper pose (Q=RotToQ(ExyzToRot([0,0,1],[0,-1,0],[1,0,0])).tolist()):
+  lx: [0.0,0.0,0.170504, 0.7071067811865475, 0.0, 0.7071067811865475, 0.0]
+  #Bounding box is attached to the local frame of 'lx'.
+  bound_box:
+    #GEH6060IL+FV+:
+    dim: [0.062,0.156,,0.170504]
+    center: [0.0,0.0,0.085252, 0.0,0.0,0.0,1.0]

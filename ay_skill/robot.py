@@ -28,14 +28,20 @@ ROBOT_NAME_ALIAS={
   'motosg650s'   :'MotomanSG650_SIM',
   'motosg650thg' :'MotomanSG650ThG',
   'motosg650thgs':'MotomanSG650ThG_SIM',
+  'motosg650geh' :'MotomanSG650GEH6000IL',
+  'motosg650gehs':'MotomanSG650GEH6000IL_SIM',
   'motogp7'    :'MotomanGP7',
   'motogp7s'   :'MotomanGP7_SIM',
   'motogp7thg' :'MotomanGP7ThG',
   'motogp7thgs':'MotomanGP7ThG_SIM',
+  'motogp7geh' :'MotomanGP7GEH6000IL',
+  'motogp7gehs':'MotomanGP7GEH6000IL_SIM',
   'motogp8'    :'MotomanGP8',
   'motogp8s'   :'MotomanGP8_SIM',
   'motogp8thg' :'MotomanGP8ThG',
   'motogp8thgs':'MotomanGP8ThG_SIM',
+  'motogp8geh' :'MotomanGP8GEH6000IL',
+  'motogp8gehs':'MotomanGP8GEH6000IL_SIM',
   'motohc10sdtp'    :'MotomanHC10SDTP',
   'motohc10sdtps'   :'MotomanHC10SDTP_SIM',
   'motohc10sdtpthg' :'MotomanHC10SDTPThG',
@@ -126,6 +132,7 @@ def Run(ct,*args):
     ct.robot= None
 
   is_sim= robot.endswith('_SIM')
+  robot_name= robot if not is_sim else robot[:-4]
 
   if   robot in ('PR2','PR2_SIM'):
     mod= SmartImportReload('ay_py.ros.rbt_pr2')
@@ -169,42 +176,51 @@ def Run(ct,*args):
 
   elif robot in ('MotomanSIA10F', 'MotomanSIA10F_SIM'):
     mod= SmartImportReload('ay_py.ros.rbt_moto')
-    ct.robot= mod.TRobotMotoman(name='MotomanSIA10F', is_sim=is_sim)
+    ct.robot= mod.TRobotMotoman(name=robot_name, is_sim=is_sim)
 
   elif robot in ('MotomanMotoMINI', 'MotomanMotoMINI_SIM'):
     mod= SmartImportReload('ay_py.ros.rbt_moto')
-    ct.robot= mod.TRobotMotoman(name='MotomanMotoMINI', is_sim=is_sim)
+    ct.robot= mod.TRobotMotoman(name=robot_name, is_sim=is_sim)
   elif robot in ('MotomanMotoMINIThG', 'MotomanMotoMINIThG_SIM'):
     mod= SmartImportReload('ay_py.ros.rbt_motothg')
-    ct.robot= mod.TRobotMotomanThG(name='MotomanMotoMINIThG', is_sim=is_sim)
+    ct.robot= mod.TRobotMotomanThG(name=robot_name, is_sim=is_sim)
 
   elif robot in ('MotomanSG650', 'MotomanSG650_SIM'):
     mod= SmartImportReload('ay_py.ros.rbt_moto')
-    ct.robot= mod.TRobotMotoman(name='MotomanSG650', is_sim=is_sim)
+    ct.robot= mod.TRobotMotoman(name=robot_name, is_sim=is_sim)
   elif robot in ('MotomanSG650ThG', 'MotomanSG650ThG_SIM'):
     mod= SmartImportReload('ay_py.ros.rbt_motothg')
-    ct.robot= mod.TRobotMotomanThG(name='MotomanSG650ThG', is_sim=is_sim)
+    ct.robot= mod.TRobotMotomanThG(name=robot_name, is_sim=is_sim)
+  elif robot.startswith('MotomanSG650GEH60'):
+    mod= SmartImportReload('ay_py.ros.rbt_motogeh6000il')
+    ct.robot= mod.TRobotMotomanGEH6000IL(name=robot_name, is_sim=is_sim)
 
   elif robot in ('MotomanGP7', 'MotomanGP7_SIM'):
     mod= SmartImportReload('ay_py.ros.rbt_moto')
-    ct.robot= mod.TRobotMotoman(name='MotomanGP7', is_sim=is_sim)
+    ct.robot= mod.TRobotMotoman(name=robot_name, is_sim=is_sim)
   elif robot in ('MotomanGP7ThG', 'MotomanGP7ThG_SIM'):
     mod= SmartImportReload('ay_py.ros.rbt_motothg')
-    ct.robot= mod.TRobotMotomanThG(name='MotomanGP7ThG', is_sim=is_sim)
+    ct.robot= mod.TRobotMotomanThG(name=robot_name, is_sim=is_sim)
+  elif robot.startswith('MotomanGP7GEH60'):
+    mod= SmartImportReload('ay_py.ros.rbt_motogeh6000il')
+    ct.robot= mod.TRobotMotomanGEH6000IL(name=robot_name, is_sim=is_sim)
 
   elif robot in ('MotomanGP8', 'MotomanGP8_SIM'):
     mod= SmartImportReload('ay_py.ros.rbt_moto')
-    ct.robot= mod.TRobotMotoman(name='MotomanGP8', is_sim=is_sim)
+    ct.robot= mod.TRobotMotoman(name=robot_name, is_sim=is_sim)
   elif robot in ('MotomanGP8ThG', 'MotomanGP8ThG_SIM'):
     mod= SmartImportReload('ay_py.ros.rbt_motothg')
-    ct.robot= mod.TRobotMotomanThG(name='MotomanGP8ThG', is_sim=is_sim)
+    ct.robot= mod.TRobotMotomanThG(name=robot_name, is_sim=is_sim)
+  elif robot.startswith('MotomanGP8GEH60'):
+    mod= SmartImportReload('ay_py.ros.rbt_motogeh6000il')
+    ct.robot= mod.TRobotMotomanGEH6000IL(name=robot_name, is_sim=is_sim)
 
   elif robot in ('MotomanHC10SDTP', 'MotomanHC10SDTP_SIM'):
     mod= SmartImportReload('ay_py.ros.rbt_moto')
-    ct.robot= mod.TRobotMotoman(name='MotomanHC10SDTP', is_sim=is_sim)
+    ct.robot= mod.TRobotMotoman(name=robot_name, is_sim=is_sim)
   elif robot in ('MotomanHC10SDTPThG', 'MotomanHC10SDTPThG_SIM'):
     mod= SmartImportReload('ay_py.ros.rbt_motothg')
-    ct.robot= mod.TRobotMotomanThG(name='MotomanHC10SDTPThG', is_sim=is_sim)
+    ct.robot= mod.TRobotMotomanThG(name=robot_name, is_sim=is_sim)
 
   elif robot in ('Mikata2','Mikata2_SIM'):
     mod= SmartImportReload('ay_py.ros.rbt_mikata2')
@@ -300,16 +316,17 @@ def Run(ct,*args):
   ct.sbr.sendTransform2= lambda translation, rotation, time, child, parent, ct=ct: ct.sbr.sendTransform(geometry_msgs.msg.TransformStamped(std_msgs.msg.Header(0,time,parent),child,geometry_msgs.msg.Transform(PToGVector3(translation),QToGQuaternion(rotation))))
   if robot=='NoRobot' or ct.robot is None:  return
 
+  res= []
+  ra= lambda r: res.append(r)
+
+  ra(ct.robot.Init())
+
   robots_with_state_validity_checker= ('PR2','Baxter','Motoman','Mikata','UR','Gen3')
   if any([ct.robot.Is(rbt) for rbt in robots_with_state_validity_checker]):
     ct.state_validity_checker= TStateValidityCheckerMI()
   else:
     ct.state_validity_checker= None
 
-  res= []
-  ra= lambda r: res.append(r)
-
-  ra(ct.robot.Init())
   if ct.state_validity_checker is not None:
     ra(ct.state_validity_checker.Init(ct.robot))
 
@@ -359,6 +376,12 @@ def Run(ct,*args):
     ct.AddDictAttr(LoadYAML(model_dir+'/robot/gripper_motomangp8_thg.yaml'))
   elif ct.robot.Is('MotomanHC10SDTPThG'):
     ct.AddDictAttr(LoadYAML(model_dir+'/robot/gripper_motomanhc10sdtp_thg.yaml'))
+  elif ct.robot.Is('MotomanSG650GEH6000IL'):
+    ct.AddDictAttr(LoadYAML(model_dir+'/robot/gripper_motomansg650_geh6060il.yaml'))
+  elif ct.robot.Is('MotomanGP7GEH6000IL'):
+    ct.AddDictAttr(LoadYAML(model_dir+'/robot/gripper_motomangp7_geh6060il.yaml'))
+  elif ct.robot.Is('MotomanGP8GEH6000IL'):
+    ct.AddDictAttr(LoadYAML(model_dir+'/robot/gripper_motomangp8_geh6060il.yaml'))
   elif ct.robot.Is('Mikata'):
     ct.AddDictAttr(LoadYAML(model_dir+'/robot/gripper_mikata.yaml'))
   elif ct.robot.Is('UR3DxlG'):
