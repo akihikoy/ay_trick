@@ -41,19 +41,24 @@ def IOStatesCallback(robot, msg):
     robot.io_states_callback(robot.io_states)
 
 def Connect(ct):
-  ct.AddSrvP('set_pui','/ur_pui_server/set_pui',ay_util_msgs.srv.SetPUI,time_out=5.0)
-  ct.AddSrvP('robot_enable','/robot_enable',std_srvs.srv.Trigger,time_out=5.0)
-  ct.AddSrvP('robot_disable','/robot_disable',std_srvs.srv.Trigger,time_out=5.0)
+  if IsServiceAvailable('/ur_pui_server/set_pui'):
+    ct.AddSrvP('set_pui','/ur_pui_server/set_pui',ay_util_msgs.srv.SetPUI,time_out=5.0)
+  if not ct.robot.Is('sim'):
+    ct.AddSrvP('robot_enable','/robot_enable',std_srvs.srv.Trigger,time_out=5.0)
+    ct.AddSrvP('robot_disable','/robot_disable',std_srvs.srv.Trigger,time_out=5.0)
 
   #Bind io_states to ct.robot.
-  ct.robot.io_states= None
-  ct.robot.io_states_callback= None  #User defined callback f(ur_msgs.msg.IOStates).
-  ct.robot.io_states_locker= threading.RLock()
-  ct.robot.IOStates= lambda robot=ct.robot: IOStates(robot)
-  ct.robot.IOStatesCallback= lambda msg, robot=ct.robot: IOStatesCallback(robot,msg)
-  ct.robot.AddSub('io_states', '/ur_hardware_interface/io_states', ur_msgs.msg.IOStates, ct.robot.IOStatesCallback)
+  if IsTopicAvailable('/ur_hardware_interface/io_states', ur_msgs.msg.IOStates):
+    ct.robot.io_states= None
+    ct.robot.io_states_callback= None  #User defined callback f(ur_msgs.msg.IOStates).
+    ct.robot.io_states_locker= threading.RLock()
+    ct.robot.IOStates= lambda robot=ct.robot: IOStates(robot)
+    ct.robot.IOStatesCallback= lambda msg, robot=ct.robot: IOStatesCallback(robot,msg)
+    ct.robot.AddSub('io_states', '/ur_hardware_interface/io_states', ur_msgs.msg.IOStates, ct.robot.IOStatesCallback)
 
 def IsPrepared(ct):
+  if ct.robot.Is('sim'):
+    return 'set_pui' in ct.srvp and 'io_states' in ct.robot.sub
   return all(srv in ct.srvp for srv in ('set_pui','robot_enable','robot_disable')) and 'io_states' in ct.robot.sub
 
 def Disconnect(ct):
@@ -69,16 +74,16 @@ def Run(ct,*args):
     args= args[1:]
 
   if command in ('on','setup'):
-    if ct.robot.Is('sim'):  return
+    #if ct.robot.Is('sim'):  return
     if IsPrepared(ct):  return
     Connect(ct)
 
   elif command in ('off','clear'):
-    if ct.robot.Is('sim'):  return
+    #if ct.robot.Is('sim'):  return
     Disconnect(ct)
 
   elif command=='is_prepared':
-    if ct.robot.Is('sim'):  return False
+    #if ct.robot.Is('sim'):  return False
     return IsPrepared(ct)
 
   elif command=='is_ready_to_move':
