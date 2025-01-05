@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<package format="2">
+  <name>ay_trick_msgs</name>
+  <version>0.0.0</version>
+  <description>The ay_trick_msgs package</description>
+
+  <author email="info@akihikoy.net">Akihiko Yamaguchi</author>
+  <maintainer email="info@akihikoy.net">Akihiko Yamaguchi</maintainer>
+  <license>Described in LICENSE</license>
+
+  <buildtool_depend>catkin</buildtool_depend>
+  <exec_depend>message_runtime</exec_depend>
+  <!--<depend>std_msgs</depend>-->
+
+  <export>
+  </export>
+</package>
