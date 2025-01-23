@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 from core_tool import *
 import std_msgs.msg
 def Help():

@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 from core_tool import *
 def Help():
   return '''Handle the virtual scene for planning.
@@ -209,7 +209,7 @@ def Run(ct,*args):
     arm= args[0]
     obj= args[1]
     if ct.HasAttr(obj,'grabbed'):
-      print 'Error: already grabbed: ',obj
+      print('Error: already grabbed: ',obj)
       return False
     x_o= ct.GetAttr(obj,'x')
     arms= ct.robot.ArmStrs(arm)
@@ -227,7 +227,7 @@ def Run(ct,*args):
   elif command=='release':
     obj= args[0]
     if not ct.HasAttr(obj,'grabbed'):
-      print 'Error: not grabbed: ',obj
+      print('Error: not grabbed: ',obj)
       return False
     arm= ct.GetAttr(obj,'grabbed','grabber_handid')
     ct.DelAttr(obj,'grabbed')

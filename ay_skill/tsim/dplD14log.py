@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 if __name__!='__main__':
   from core_tool import *
 def Help():
@@ -147,12 +147,12 @@ if __name__=='__main__':
       if qopt!='':
         cmd= cmd.replace('qplot -x2 go','qplot '+qopt)
         if cmd[-1]=='&':  cmd= cmd[:-1]
-      print '###',cmd
+      print('###',cmd)
       os.system(cmd)
 
-  print '##########################'
-  print '###Press enter to close###'
-  print '##########################'
-  raw_input()
+  print('##########################')
+  print('###Press enter to close###')
+  print('##########################')
+  input()
   os.system('qplot -x2kill go')
 

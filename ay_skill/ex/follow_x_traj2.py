@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 from core_tool import *
 def Help():
   return '''Move arm to follow a target end-effector trajectory.

@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 from core_tool import *
 def Help():
   return '''Get current joint angles.
@@ -8,4 +8,4 @@ def Help():
 def Run(ct,*args):
   arm= args[0] if len(args)>0 else ct.robot.Arm
   q= ct.robot.Q(arm=arm)  #Get current joint angles
-  print 'Joint angles of {arm}-arm= {q}'.format(arm=ct.robot.ArmStr(arm), q=q)
+  print('Joint angles of {arm}-arm= {q}'.format(arm=ct.robot.ArmStr(arm), q=q))

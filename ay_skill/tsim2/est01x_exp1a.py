@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 from core_tool import *
 from ay_py.tool.exp import Exp
 def Help():
@@ -39,8 +39,8 @@ def Run(ct,*args):
       },
     }  #compared_options
 
-  conditions= {cond:copy.deepcopy(common) for cond in compared_options.keys()}
-  for cond,options in compared_options.iteritems():
+  conditions= {cond:copy.deepcopy(common) for cond in list(compared_options.keys())}
+  for cond,options in compared_options.items():
     InsertDict(conditions[cond], options)
 
   main= lambda logdir,options: ct.Run(main_script,logdir,options)

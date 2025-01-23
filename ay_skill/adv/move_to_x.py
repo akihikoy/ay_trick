@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 from core_tool import *
 def Help():
   return '''Move to a Cartesian pose with trajectory planning.
@@ -32,10 +32,10 @@ def Run(ct,*args):
   ct.Run('adv.plan_traj', situation)
 
   if not ct.HasAttr(TMP,'q_traj') or not ct.HasAttr(TMP,'t_traj'):
-    print 'Failed to infer q_traj/t_traj'
+    print('Failed to infer q_traj/t_traj')
     return FailureCode('infer_q_traj')
   if conservative:
-    print 'Follow the trajectory?'
+    print('Follow the trajectory?')
     if not AskYesNo():  return FailureCode('canceled')
 
   q_traj= ct.GetAttr(TMP,'q_traj')

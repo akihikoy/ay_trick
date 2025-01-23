@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 from core_tool import *
 def Help():
   return '''Test of slip-based holding.
@@ -34,7 +34,7 @@ def HoldLoop(th_info, ct, arm):
   get_value= lambda lst,idx: lst[idx] if isinstance(lst,list) else lst
   while th_info.IsRunning() and not rospy.is_shutdown():
     if any(slip_detect2()):
-      print 'slip',slip_detect2(),rospy.Time.now().to_sec()
+      print('slip',slip_detect2(),rospy.Time.now().to_sec())
       #g_pos-= 0.0005 if arm==LEFT else 0.002
       g_pos-= get_value(ct.GetAttr('fv_ctrl','min_gstep'),arm)
       #ct.robot.MoveGripper(pos=g_pos, arm=arm, speed=100.0, blocking=False)
@@ -68,7 +68,7 @@ def Run(ct,*args):
   if command=='on':
     arm= args[0] if len(args)>0 else ct.robot.Arm
     if 'vs_hold'+LRToStrS(arm) in ct.thread_manager.thread_list:
-      print 'vs_hold'+LRToStrS(arm),'is already on'
+      print('vs_hold'+LRToStrS(arm),'is already on')
 
     if not all(ct.Run('fv.fv','is_active',arm)):
       ct.Run('fv.fv','on',arm)

@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 from core_tool import *
 import kortex_driver.msg
 import kortex_driver.srv
@@ -14,11 +14,9 @@ def Help():
         velctrl.Finish()
     '''
 def Run(ct,*args):
-  print 'Error:',Help()
+  print('Error:',Help())
 
-class TVelCtrl(object):
-  __metaclass__= TMultiSingleton
-
+class TVelCtrl(object, metaclass=TMultiSingleton):
   #ct: core_tool.
   #rate: Control time cycle in Hz.
   #dq_lim: Limit of joint angular velocity (rad/s).
@@ -97,7 +95,7 @@ class TVelCtrl(object):
       CPrint(3,'gen3.velctrl: dq is modified due to exceeding ddq_lim;',ddq_max,ddq_lim)
       #print scale,dq0,dq
     #Limit velocities:
-    dq_max= max(map(abs,dq))
+    dq_max= max(list(map(abs,dq)))
     if dq_max>self.dq_lim:
       scale= self.dq_lim/dq_max
       dq= [v*scale for v in dq]

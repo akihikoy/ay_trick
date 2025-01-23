@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 from core_tool import *
 roslib.load_manifest('sensor_msgs')
 import cv2
@@ -43,7 +43,7 @@ def ReceiveDepth(ct,l,lh,msg):
       l.img_depth= lh.cvbridge.imgmsg_to_cv2(msg, '16UC1')
       if len(l.img_depth.shape)==3:  l.img_depth= l.img_depth.reshape(l.img_depth.shape[0],-1)  #NOTE: For the compatibility of cvbridge version difference(?)
   except CvBridgeError as e:
-    print e
+    print(e)
   if ct.robot is not None:
     with lh.thread_locker:
       l.xw= ct.robot.FK(arm=l.arm)
@@ -60,7 +60,7 @@ def ReceiveRGB(ct,l,lh,msg):
     with lh.thread_locker:
       l.img_rgb= lh.cvbridge.imgmsg_to_cv2(msg, 'bgr8')
   except CvBridgeError as e:
-    print e
+    print(e)
   if ct.robot is not None and 'depth' not in l.options['types']:
     with lh.thread_locker:
       l.xw= ct.robot.FK(arm=l.arm)
@@ -112,7 +112,7 @@ def Run(ct,*args):
   elif command=='show':
     rs_attr= args[0] if len(args)>0 else 'rs'
     components= ct.GetAttr(TMP,rs_attr).options['types']
-    print 'Press any key to quit.'
+    print('Press any key to quit.')
     kbhit= TKBHit()
     try:
       for c in components:

@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 from core_tool import *
 def Help():
   return '''Test of using actions for ODE grasping and pouring simulation (ver.2.1).

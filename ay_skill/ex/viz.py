@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 from core_tool import *
 def Help():
   return '''Examples of TSimpleVisualizer.
@@ -7,7 +7,7 @@ def Help():
   '''
 
 def HelpKeyOp():
-  print '''Keyboard operation:
+  print('''Keyboard operation:
   q: Quit.
   h: Help.
   d: Delete all (DeleteAllMarkers).
@@ -26,7 +26,7 @@ def HelpKeyOp():
   l: Add a polygon (AddPolygon).
   k: Add a list of lines (AddLineList).
   t: Add a text (AddText).
-  '''
+  ''')
 
 def Run(ct,*args):
   frame= args[0] if len(args)>0 else ct.robot.BaseFrame

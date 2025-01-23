@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 from core_tool import *
 def Help():
   return '''Thread tool.
@@ -23,15 +23,15 @@ def Run(ct,*args):
 
   if command=='list':
     assert(len(args)==0)
-    for name,th in ct.thread_manager.thread_list.iteritems():
-      print '%s%s%s: %s, running=%s, thread=%s' % (
-          c1,name,c2, hex(id(th)), str(th.running), hex(id(th.thread)))
+    for name,th in ct.thread_manager.thread_list.items():
+      print('%s%s%s: %s, running=%s, thread=%s' % (
+          c1,name,c2, hex(id(th)), str(th.running), hex(id(th.thread))))
 
   elif command=='stop':
     assert(len(args)==1)
-    print 'Stop thread %r...' % args[0],
+    print('Stop thread %r...' % args[0], end=' ')
     ct.thread_manager.Stop(args[0])
-    print 'ok'
+    print('ok')
 
   elif command=='stopall':
     assert(len(args)==0)

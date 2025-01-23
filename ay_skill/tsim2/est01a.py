@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 from core_tool import *
 SmartImportReload('tsim2.est01')
 from tsim2.est01 import (
@@ -117,7 +117,7 @@ def Estimate(ct,*args):
   l.xs.n5= {key:xs_n5[key] for key in input_keys}
 
   #Initializing hidden variables (actions).
-  for key,value in l.opt_conf['hidden_st0'].iteritems():
+  for key,value in l.opt_conf['hidden_st0'].items():
     l.xs.n5[key]= value
 
   xs_nx= next(node for node in db_data.Entry[0].Seq if node.Name in ('n6ti','n6sa')).XS
@@ -126,13 +126,13 @@ def Estimate(ct,*args):
 
   res= l.dpl.Plan('n5', l.xs.n5)
 
-  print 'Setup:'
-  print l.opt_conf
-  print 'XSSA after optimization:'
-  print l.xs.n5
-  print 'material2=',l.xs.n5['material2']
+  print('Setup:')
+  print(l.opt_conf)
+  print('XSSA after optimization:')
+  print(l.xs.n5)
+  print('material2=',l.xs.n5['material2'])
 
-  return {key:value for key,value in l.xs.n5.iteritems() if domain.SpaceDefs[key].Type!='state'}
+  return {key:value for key,value in l.xs.n5.items() if domain.SpaceDefs[key].Type!='state'}
 
 
 def Run(ct,*args):

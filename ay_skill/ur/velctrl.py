@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 from core_tool import *
 def Help():
   return '''Velocity control tools for UR.  Do not use this directly.
@@ -12,7 +12,7 @@ def Help():
         velctrl.Finish()
     '''
 def Run(ct,*args):
-  print 'Error:',Help()
+  print('Error:',Help())
 
 
 '''
@@ -161,9 +161,7 @@ class TURVelCtrl(object):
     if len_sent!=len(cmd):
       raise Exception('Command was not sent properly; cmd {cmd} byte, sent {sent} byte'.format(cmd=len(cmd),sent=len_sent))
 
-class TVelCtrl(object):
-  __metaclass__= TMultiSingleton
-
+class TVelCtrl(object, metaclass=TMultiSingleton):
   #ct: core_tool.
   #rate: Control time cycle in Hz.
   #dq_lim: Limit of joint angular velocity (rad/s).
@@ -232,7 +230,7 @@ class TVelCtrl(object):
       CPrint(3,'ur.velctrl: dq is modified due to exceeding ddq_lim;',ddq_max,ddq_lim)
       #print scale,dq0,dq
     #Limit velocities:
-    dq_max= max(map(abs,dq))
+    dq_max= max(list(map(abs,dq)))
     if dq_max>self.dq_lim:
       scale= self.dq_lim/dq_max
       dq= [v*scale for v in dq]

@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 from core_tool import *
 SmartImportReload('tsim.dpl_cmn')
 from tsim.dpl_cmn import *
@@ -138,7 +138,7 @@ def Execute(ct,l):
       l.xs.n3= CopyXSSA(l.xs.prev)
       if repeated:
         #Delete actions and selections (e.g. skill) to plan again from initial guess.
-        for key in l.xs.n3.keys():
+        for key in list(l.xs.n3.keys()):
           if l.dpl.d.SpaceDefs[key].Type in ('action','select'):
             del l.xs.n3[key]
       InsertDict(l.xs.n3, ObserveXSSA(l,l.xs.prev,obs_keys_after_grab+('da_trg',)))
@@ -297,7 +297,7 @@ def ConfigCallback(ct,l,sim):
   #l.config.ContactBounce= 0.1
 
   #InsertDict(l.config.__dict__, l.opt_conf['config'])
-  for key,value in l.opt_conf['config'].iteritems():
+  for key,value in l.opt_conf['config'].items():
     setattr(l.config, key, value)
 
   if l.rcv_size=='static':
@@ -595,7 +595,7 @@ def Run(ct,*args):
   ct.log_dpl= l.dpl  #for log purpose
   ct.log_mm= l.mm
 
-  print 'Copying',PycToPy(__file__),'to',PycToPy(l.logdir+os.path.basename(__file__))
+  print('Copying',PycToPy(__file__),'to',PycToPy(l.logdir+os.path.basename(__file__)))
   CopyFile(PycToPy(__file__),PycToPy(l.logdir+os.path.basename(__file__)))
 
   count= 0
@@ -630,7 +630,7 @@ def Run(ct,*args):
     LogDPL(l)
     if count>=l.num_episodes:  break
     if l.interactive:
-      print 'Continue?'
+      print('Continue?')
       if not AskYesNo():  break
   fp.close()
 

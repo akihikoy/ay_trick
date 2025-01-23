@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 from core_tool import *
 def Help():
   return '''Move fingers of gripper to a target position.
@@ -12,4 +12,4 @@ def Run(ct,*args):
   arm= args[0]
   pos= args[1]
   ct.robot.MoveGripper(pos, arm=arm)
-  print 'Moving {arm}-gripper to {pos}'.format(arm=LRToStr(arm), pos=pos)
+  print('Moving {arm}-gripper to {pos}'.format(arm=LRToStr(arm), pos=pos))

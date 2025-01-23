@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 from core_tool import *
 def Help():
   return '''Reboot joints of Mikata Arm.
@@ -16,7 +16,7 @@ def Run(ct,*args):
       rospy.sleep(0.1)
       ct.robot.mikata.EnableTorque()
     else:
-      print 'Canceled.'
+      print('Canceled.')
   elif joint=='g':
     joint= ct.robot.mikata.JointNames()[-1]
     ct.robot.mikata.Reboot([joint])

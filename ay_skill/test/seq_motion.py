@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 from core_tool import *
 try:
   import industrial_msgs.msg
@@ -18,7 +18,7 @@ def PrintRobotState(robot, text=''):
   actc_res= robot.actc.traj.get_result()
   actc_res= ACTC_RESULT_TO_STR[actc_res.error_code] if actc_res is not None else 'None'
   if robot.Is('Motoman'):
-    print '{}: e_stopped={} drives_powered={} motion_possible={} in_error={} actc_st={}, actc_res:{}'.format(
+    print('{}: e_stopped={} drives_powered={} motion_possible={} in_error={} actc_st={}, actc_res:{}'.format(
       text,
       robot.robot_status.e_stopped.val==industrial_msgs.msg.TriState.FALSE,
       robot.robot_status.drives_powered.val==industrial_msgs.msg.TriState.TRUE,
@@ -26,9 +26,9 @@ def PrintRobotState(robot, text=''):
       robot.robot_status.in_error.val==industrial_msgs.msg.TriState.FALSE,
       st,
       actc_res,
-      )
+      ))
   elif robot.Is('UR'):
-    print '{}: is_normal: {}, robot_mode: {}, safety_mode: {}, robot_program_running: {}, actc_st: {}, actc_res:{}'.format(
+    print('{}: is_normal: {}, robot_mode: {}, safety_mode: {}, robot_program_running: {}, actc_st: {}, actc_res:{}'.format(
       text,
       robot.IsNormal(),
       robot.robot_mode.mode,
@@ -36,7 +36,7 @@ def PrintRobotState(robot, text=''):
       robot.robot_program_running,
       st,
       actc_res,
-      )
+      ))
 
 def Run(ct,*args):
   cmd= args[0] if len(args)>0 else None
@@ -68,10 +68,10 @@ def Run(ct,*args):
   q_traj_rev= list(reversed(q_traj))
 
   if cmd is None:
-    print Help()
-    print 'q_traj=',q_traj
-    print 't_traj=',t_traj
-    print 'q_traj_rev=',q_traj_rev
+    print(Help())
+    print('q_traj=',q_traj)
+    print('t_traj=',t_traj)
+    print('q_traj_rev=',q_traj_rev)
     return
 
   if ct.robot.Is('UR'):
@@ -96,7 +96,7 @@ def Run(ct,*args):
         ct.robot.FollowQTraj(q_traj_rev, t_traj, arm=arm, blocking=blocking_mode)
         PrintRobotState(ct.robot, 'p30')
   except Exception as e:
-    print e
+    print(e)
     PrintRobotState(ct.robot, 'e10')
 
 

@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 from core_tool import *
 def Help():
   return '''Spline trajectory control of ODE hopping robot simulation.
@@ -30,7 +30,7 @@ def Run(ct,*args):
 
     ct.srvp.ode_resume()
     l.config= sim.GetConfig(ct)
-    print 'Current config:',l.config
+    print('Current config:',l.config)
 
     #Setup config
     #l.config.BaseDensity= 500.0
@@ -39,7 +39,7 @@ def Run(ct,*args):
     sim.ResetConfig(ct,l.config)
     time.sleep(0.1)  #Wait for l.sensors is updated
 
-    print 'l.sensors:',l.sensors
+    print('l.sensors:',l.sensors)
 
     #Jump motion:
     #key_points= [[0.0, 0.0,0.0,0.0,0.0],

@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 from core_tool import *
 def Help():
   return '''List up the attributes or assign value to an element.
@@ -66,61 +66,61 @@ def Run(ct,*args):
             if len(keys)==0:
               PrintDict(value,max_level=max_level,level=0,keyonly=True, col=col)
             else:
-              print '%s[%s]%s= ...' % (c1,']['.join(keys),c2)
+              print('%s[%s]%s= ...' % (c1,']['.join(keys),c2))
               PrintDict(value,max_level=max_level,level=1,keyonly=True, col=col)
           else:
-            print '%s[%s]%s= %s' % (c1,']['.join(keys),c2, type(value))
+            print('%s[%s]%s= %s' % (c1,']['.join(keys),c2, type(value)))
       elif command=='show':
         value= ct.GetAttr(*args)
         if isinstance(value,dict):
           if len(args)==0:
             PrintDict(value,level=0, col=col)
           else:
-            print '%s[%s]%s= ...' % (c1,']['.join(args),c2)
+            print('%s[%s]%s= ...' % (c1,']['.join(args),c2))
             PrintDict(value,level=1, col=col)
         else:
-          print '%s[%s]%s= %r' % (c1,']['.join(args),c2, value)
+          print('%s[%s]%s= %r' % (c1,']['.join(args),c2, value))
       elif command=='set':
         ct.SetAttr(*args)
-        print 'Set:'
+        print('Set:')
         Run(ct,'show',*(args[:-1]))
       elif command=='del':
         ct.DelAttr(*args)
-        print 'Deleted: [%s]' % (']['.join(args))
+        print('Deleted: [%s]' % (']['.join(args)))
       elif command=='savemem':
         file_name= args[0] if len(args)>0 else MEMORY_FILE
         if os.path.exists(file_name):
-          print 'File %r exists.  Do you want to overwrite?' % file_name
+          print('File %r exists.  Do you want to overwrite?' % file_name)
           if not AskYesNo():
             return
         SaveYAML(ct.GetAttrOr({},'memory'), file_name)
-        print 'Saved memory into: %r' % file_name
+        print('Saved memory into: %r' % file_name)
       elif command=='loadmem':
         file_name= args[0] if len(args)>0 else MEMORY_FILE
         if not os.path.exists(file_name):
           CPrint(4,'Memory file does not exist:',file_name)
           return
         if ct.HasAttr('memory'):
-          print 'Memory exists.  Do you want to load from %r?' % file_name
+          print('Memory exists.  Do you want to load from %r?' % file_name)
           if not AskYesNo():
             return
         ct.AddDictAttr('memory', LoadYAML(file_name))
-        print 'Loaded memory from: %r' % (file_name)
+        print('Loaded memory from: %r' % (file_name))
       elif command=='dump':
         file_name= args[0]
         if os.path.exists(file_name):
-          print 'File %r exists.  Do you want to overwrite?' % file_name
+          print('File %r exists.  Do you want to overwrite?' % file_name)
           if not AskYesNo():
             return
         SaveYAML(ct.GetAttrOr({}), file_name)
-        print 'Saved attributes into: %r' % file_name
+        print('Saved attributes into: %r' % file_name)
       elif command=='load':
         file_name= args[0]
-        print 'Do you want to load attributes from %r?' % file_name
+        print('Do you want to load attributes from %r?' % file_name)
         if not AskYesNo():
           return
         ct.AddDictAttr(LoadYAML(file_name))
-        print 'Loaded attributes from: %r' % (file_name)
+        print('Loaded attributes from: %r' % (file_name))
       else:
-        print 'Invalid command'
-        print Help()
+        print('Invalid command')
+        print(Help())

@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 from core_tool import *
 def Help():
   return '''Test of ODE hopping robot simulation.
@@ -15,7 +15,7 @@ def Run(ct,*args):
 
     ct.srvp.ode_resume()
     l.config= sim.GetConfig(ct)
-    print 'Current config:',l.config
+    print('Current config:',l.config)
 
     #Setup config
     #l.config.BaseDensity= 500.0
@@ -24,17 +24,17 @@ def Run(ct,*args):
     sim.ResetConfig(ct,l.config)
     time.sleep(0.1)  #Wait for l.sensors is updated
 
-    print 'l.sensors:',l.sensors
+    print('l.sensors:',l.sensors)
 
     #Jump motion (with slightly twisting):
     for i in range(30):
       #sim.MoveDTheta(ct,l,[0.0,0.0,0.4,-0.7])
       sim.MoveDTheta(ct,l,[0.2,0.2,0.4,-0.7])
-      print l.sensors.Time,l.sensors.JointAngles
+      print(l.sensors.Time,l.sensors.JointAngles)
     for i in range(15):
       #sim.MoveDTheta(ct,l,[0.0,0.0,-0.8,1.4])
       sim.MoveDTheta(ct,l,[-0.4,-0.4,-0.8,1.4])
-      print l.sensors.Time,l.sensors.JointAngles
+      print(l.sensors.Time,l.sensors.JointAngles)
 
     time.sleep(2.0)  #Observe
 

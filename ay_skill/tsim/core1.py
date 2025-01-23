@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 from core_tool import *
 import std_msgs.msg
 import std_srvs.srv
@@ -11,19 +11,19 @@ def Help():
 
 def SetupServiceProxy(ct,l):
   if 'ode_get_config' not in ct.srvp:
-    print 'Waiting for /ode_grpour_sim/get_config...'
+    print('Waiting for /ode_grpour_sim/get_config...')
     rospy.wait_for_service('/ode_grpour_sim/get_config',3.0)
     ct.srvp.ode_get_config= rospy.ServiceProxy('/ode_grpour_sim/get_config', ay_sim_msgs.srv.ODEGetConfig, persistent=False)
   if 'ode_reset2' not in ct.srvp:
-    print 'Waiting for /ode_grpour_sim/reset2...'
+    print('Waiting for /ode_grpour_sim/reset2...')
     rospy.wait_for_service('/ode_grpour_sim/reset2',3.0)
     ct.srvp.ode_reset2= rospy.ServiceProxy('/ode_grpour_sim/reset2', ay_sim_msgs.srv.ODEReset2, persistent=False)
   if 'ode_pause' not in ct.srvp:
-    print 'Waiting for /ode_grpour_sim/pause...'
+    print('Waiting for /ode_grpour_sim/pause...')
     rospy.wait_for_service('/ode_grpour_sim/pause',3.0)
     ct.srvp.ode_pause= rospy.ServiceProxy('/ode_grpour_sim/pause', std_srvs.srv.Empty, persistent=False)
   if 'ode_resume' not in ct.srvp:
-    print 'Waiting for /ode_grpour_sim/resume...'
+    print('Waiting for /ode_grpour_sim/resume...')
     rospy.wait_for_service('/ode_grpour_sim/resume',3.0)
     ct.srvp.ode_resume= rospy.ServiceProxy('/ode_grpour_sim/resume', std_srvs.srv.Empty, persistent=False)
 
@@ -119,4 +119,4 @@ class TPause:
     self.ct.srvp.ode_resume()
 
 def Run(ct,*args):
-  print Help()
+  print(Help())

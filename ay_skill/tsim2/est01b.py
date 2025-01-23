@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 from core_tool import *
 SmartImportReload('tsim2.est01')
 from tsim2.est01 import (
@@ -186,18 +186,18 @@ def Estimate(ct,*args):
     xs_n5_array[i]= SSA(x,cov)
 
   #Initializing hidden variables (actions).
-  for key,value in l.opt_conf['hidden_st0'].iteritems():
+  for key,value in l.opt_conf['hidden_st0'].items():
     l.xs.n0[key]= value
 
   res= l.dpl.Plan('n0', l.xs.n0)
 
-  print 'Setup:'
-  print l.opt_conf
-  print 'XSSA after optimization:'
-  print l.xs.n0
-  print 'material2=',l.xs.n0['material2']
+  print('Setup:')
+  print(l.opt_conf)
+  print('XSSA after optimization:')
+  print(l.xs.n0)
+  print('material2=',l.xs.n0['material2'])
 
-  return {key:value for key,value in l.xs.n0.iteritems() if domain.SpaceDefs[key].Type!='state'}
+  return {key:value for key,value in l.xs.n0.items() if domain.SpaceDefs[key].Type!='state'}
 
 
 def Run(ct,*args):

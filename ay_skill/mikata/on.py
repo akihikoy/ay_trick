@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 from core_tool import *
 def Help():
   return '''Enable joints of Mikata Arm.
@@ -14,7 +14,7 @@ def Run(ct,*args):
     if AskYesNo():
       ct.robot.mikata.EnableTorque()
     else:
-      print 'Canceled.'
+      print('Canceled.')
   elif joint=='g':
     joint= ct.robot.mikata.JointNames()[-1]
     ct.robot.mikata.EnableTorque([joint])

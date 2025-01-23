@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 from core_tool import *
 def Help():
   return '''Monitor the FV data.
@@ -31,7 +31,7 @@ def Run(ct,*args):
     for v in values:
       res.append(eval(v,globals(),fv_data.__dict__))
     line= '; '.join(map(repr,res))
-    print line
+    print(line)
 
   ct.callback.fv_objinfo[ct.robot.ArmStrS(arm)]= [Monitor,Monitor]
 

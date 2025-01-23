@@ -1,7 +1,7 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 from core_tool import *
 SmartImportReload('keyctrl3')
-from keyctrl3 import Callback
+from .keyctrl3 import Callback
 import sensor_msgs.msg
 
 def Help():
@@ -45,7 +45,7 @@ def Run(ct,*args):
         break
 
       if state[1]=='key_h':
-        print '''\
+        print('''\
 Command:
   Joystick:
     RB: Activation
@@ -74,12 +74,12 @@ Command:
     q: Quit
     h: Show help
     l/r: Switch arm to LEFT/RIGHT
-    i: Run fv.inhand 'on'/'off' arm  (In-hand manipulation) '''
+    i: Run fv.inhand 'on'/'off' arm  (In-hand manipulation) ''')
         state[1]= 'no_cmd'
 
       elif state[1]=='key_l' or state[1]=='key_r':
         arm= LEFT if state[1]=='key_l' else RIGHT
-        print 'Switched arm:',LRToStr(arm)
+        print('Switched arm:',LRToStr(arm))
         state[1]= 'no_cmd'
       elif state[1]=='key_i' or state[1]=='cmd_Y':
         if 'vs_inhand'+LRToStrS(arm) not in ct.thread_manager.thread_list:
@@ -92,7 +92,7 @@ Command:
         arm= RIGHT
         #ct.robot.limbs[arm].exit_control_mode()
         #arm= state[2]
-        print 'Switched arm:',LRToStr(arm)
+        print('Switched arm:',LRToStr(arm))
         state[1]= 'no_cmd'
 
       #elif state[1]=='cmd_Y':
@@ -183,4 +183,4 @@ Command:
       if active_holding[arm]:
         ct.robot.EndEff(arm).StopHolding()
         active_holding[arm]= False
-    print 'Finished'
+    print('Finished')

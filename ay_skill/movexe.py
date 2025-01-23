@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 from core_tool import *
 def Help():
   return '''Move the fingertip to a target pose.
@@ -20,5 +20,5 @@ def Run(ct,*args):
   if len(xe_trg)==3:  xe_trg= list(xe_trg)+xe[3:]
   elif len(xe_trg)==4:  xe_trg= xe[:3]+list(xe_trg)
   assert(len(xe_trg)==7)
-  print 'Move to xe:',xe_trg
+  print('Move to xe:',xe_trg)
   ct.robot.MoveToX(xe_trg, dt, x_ext=lx_f)

@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 from core_tool import *
 import rospkg
 sys.path.append(os.path.join(rospkg.RosPack().get_path('ay_util'),'scripts'))
@@ -79,11 +79,11 @@ def Run(ct,*args):
     #rospy.sleep(1.0)
     for i in range(20):
       ur_mngr.RunURDashboard('unlock_protective_stop')
-      print 'debug,2',i
-      print 'UR.ur_safety_mode',ur_mngr.ur_safety_mode_names[ur_mngr.ur_safety_mode]
+      print('debug,2',i)
+      print('UR.ur_safety_mode',ur_mngr.ur_safety_mode_names[ur_mngr.ur_safety_mode])
       #rospy.sleep(0.2)
-      print 'debug,3',i
-      print 'UR.ur_safety_mode',ur_mngr.ur_safety_mode_names[ur_mngr.ur_safety_mode]
+      print('debug,3',i)
+      print('UR.ur_safety_mode',ur_mngr.ur_safety_mode_names[ur_mngr.ur_safety_mode])
       if ur_mngr.WaitForSafetyMode(ur_dashboard_msgs.msg.SafetyMode.NORMAL, timeout=0.5):  break
     #print 'debug,4'
     #print 'UR.ur_safety_mode',ur_mngr.ur_safety_mode_names[ur_mngr.ur_safety_mode]

@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 from core_tool import *
 def Help():
   return '''Change config of ODE grasping and pouring simulation.
@@ -12,7 +12,7 @@ def Run(ct,*args):
 
   ct.srvp.ode_resume()
   l.config= sim.GetConfig(ct)
-  print 'Current config:',l.config
+  print('Current config:',l.config)
 
   #Setup config
   l.config.MaxContacts= 2
@@ -45,7 +45,7 @@ def Run(ct,*args):
   sim.ResetConfig(ct,l.config)
   time.sleep(0.1)  #Wait for l.sensors is updated
   ct.srvp.ode_pause()  #Pause to wait grasp plan
-  print '---------------'
-  print 'New config:',sim.GetConfig(ct)
-  print '---------------'
-  print 'Run tsim.clean to disconnect'
+  print('---------------')
+  print('New config:',sim.GetConfig(ct))
+  print('---------------')
+  print('Run tsim.clean to disconnect')

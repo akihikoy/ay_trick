@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 from core_tool import *
 roslib.load_manifest('ay_3dvision_msgs')
 import ay_3dvision_msgs.srv

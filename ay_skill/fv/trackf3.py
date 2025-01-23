@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 from core_tool import *
 def Help():
   return '''Track an external force.  Using short-term change of posforce_array.
@@ -66,7 +66,7 @@ def TrackingLoop(th_info, ct, arm, ctrl_type):
         return Vec([0.0]*6)
       gpos= (-1.0,1.0)[side]*ct.robot.GripperPos(arm)
       force_array+= [p_f[2:] + np.cross([p_f[0],gpos,p_f[1]],p_f[2:]).tolist() for p_f in diff_pfa]
-    f_diff= [sum([force[d] for force in force_array])/float(len(force_array)) for d in xrange(6)]
+    f_diff= [sum([force[d] for force in force_array])/float(len(force_array)) for d in range(6)]
     return Vec(f_diff)
 
   def out_of_track():
@@ -132,7 +132,7 @@ def Run(ct,*args):
     arm= args[0] if len(args)>0 else ct.robot.Arm
     ctrl_type= args[1] if len(args)>1 else 'position'
     if 'vs_trackf3'+LRToStrS(arm) in ct.thread_manager.thread_list:
-      print 'vs_trackf3'+LRToStrS(arm),'is already on'
+      print('vs_trackf3'+LRToStrS(arm),'is already on')
 
     if not all(ct.Run('fv.fv','is_active',arm)):
       ct.Run('fv.fv','on',arm)
@@ -140,17 +140,17 @@ def Run(ct,*args):
     ct.Run('fv.grasp','off',arm)
     ct.Run('fv.hold','off',arm)
 
-    print 'Turn on:','vs_trackf3'+LRToStrS(arm)
+    print('Turn on:','vs_trackf3'+LRToStrS(arm))
     ct.thread_manager.Add(name='vs_trackf3'+LRToStrS(arm), target=lambda th_info: TrackingLoop(th_info,ct,arm,ctrl_type))
 
   elif command=='off':
     arm= args[0] if len(args)>0 else ct.robot.Arm
-    print 'Turn off:','vs_trackf3'+LRToStrS(arm)
+    print('Turn off:','vs_trackf3'+LRToStrS(arm))
     ct.thread_manager.Stop(name='vs_trackf3'+LRToStrS(arm))
 
   elif command=='clear':
-    print 'Turn off:','vs_trackf3'+LRToStrS(RIGHT)
-    print 'Turn off:','vs_trackf3'+LRToStrS(LEFT)
+    print('Turn off:','vs_trackf3'+LRToStrS(RIGHT))
+    print('Turn off:','vs_trackf3'+LRToStrS(LEFT))
     ct.thread_manager.Stop(name='vs_trackf3'+LRToStrS(RIGHT))
     ct.thread_manager.Stop(name='vs_trackf3'+LRToStrS(LEFT))
 

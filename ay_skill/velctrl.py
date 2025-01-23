@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 from core_tool import *
 def Help():
   return '''Return a velocity control interface of a robot.
@@ -57,6 +57,6 @@ def Run(ct,*args):
   else:
     raise Exception('{robot} does not support velocity control.'.format(robot=ct.robot.Name))
 
-  print 'TVelCtrl.NumReferences=',ct.m.velctrl.TVelCtrl.NumReferences(arm)
+  print('TVelCtrl.NumReferences=',ct.m.velctrl.TVelCtrl.NumReferences(arm))
 
   return velctrl

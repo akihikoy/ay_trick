@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 from core_tool import *
 def Help():
   return '''Torque control tools for Baxter.  Do not use this directly.
@@ -12,11 +12,9 @@ def Help():
         tqctrl.Finish()
     '''
 def Run(ct,*args):
-  print 'Error:',Help()
+  print('Error:',Help())
 
-class TTqCtrl(object):
-  __metaclass__= TMultiSingleton
-
+class TTqCtrl(object, metaclass=TMultiSingleton):
   #ct: core_tool.
   #rate: Control time cycle in Hz.
   def __init__(self, arm, ct, rate=500):
@@ -48,7 +46,7 @@ class TTqCtrl(object):
     for j,(qi,qmini,qmaxi) in enumerate(zip(q,*ct.robot.JointLimits(arm))):
       if qi<qmini+q_limit_th or qi>qmaxi-q_limit_th:  tq[j]= 0.0
 
-    tq_max= max(map(abs,tq))
+    tq_max= max(list(map(abs,tq)))
     if tq_max>tq_lim:  tq= [v*(tq_lim/tq_max) for v in tq]
 
     cmd= {joint: tq[j] for j,joint in enumerate(ct.robot.JointNames(arm))}

@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 from core_tool import *
 def Help():
   return '''Plan a collision free trajectory.
@@ -95,7 +95,7 @@ def Run(ct,*args):
     #with ct.robot.sensor_locker:
     res= ct.state_validity_checker.IsValidTrajectory(q_traj_ros)
     if not res.valid:
-      if verbose: print 'IsValidTrajectory=',res
+      if verbose: print('IsValidTrajectory=',res)
       return None
 
     dist= 0.0

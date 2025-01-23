@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 from core_tool import *
 roslib.load_manifest('sensor_msgs')
 import sensor_msgs.msg
@@ -45,16 +45,16 @@ def OptimizeRSPose(ct, sample_list):
     num_f_eval[0]+= 1
     return err
 
-  print '##OptimizeRSPose##'
+  print('##OptimizeRSPose##')
   #print 'sample_list [(x_marker_robot,x_marker_rs)]:'
   #for (x_marker_robot,x_marker_rs) in sample_list:  print ' ',(x_marker_robot,x_marker_rs)
   # Minimize the pose_error
   xmin,xmax= [-5,-5,-5, -5,-5,-5],[5,5,5, 5,5,5]
   tol= 1.0e-6
-  print 'Optimizing...'
+  print('Optimizing...')
   res= scipy.optimize.differential_evolution(pose_error, np.array([xmin,xmax]).T, strategy='best1bin', maxiter=300, popsize=20, tol=tol, mutation=(0.5, 1), recombination=0.7)
-  print ''
-  print 'Optimization result:\n',res
+  print('')
+  print('Optimization result:\n',res)
   x_rs= rs_pose_to_x(res.x)
   return x_rs
 
@@ -81,16 +81,16 @@ def OptimizeRSPoseWithFixedQ(ct, sample_list, q_fixed):
     num_f_eval[0]+= 1
     return err
 
-  print '##OptimizeRSPoseWithFixedQ##'
+  print('##OptimizeRSPoseWithFixedQ##')
   #print 'sample_list [(x_marker_robot,x_marker_rs)]:'
   #for (x_marker_robot,x_marker_rs) in sample_list:  print ' ',(x_marker_robot,x_marker_rs)
   # Minimize the pose_error
   xmin,xmax= [-5,-5,-5],[5,5,5]
   tol= 1.0e-6
-  print 'Optimizing...'
+  print('Optimizing...')
   res= scipy.optimize.differential_evolution(pose_error, np.array([xmin,xmax]).T, strategy='best1bin', maxiter=300, popsize=20, tol=tol, mutation=(0.5, 1), recombination=0.7)
-  print ''
-  print 'Optimization result:\n',res
+  print('')
+  print('Optimization result:\n',res)
   x_rs= rs_pose_to_x(res.x)
   return x_rs
 
@@ -144,19 +144,19 @@ def ImageCallback(ct, msg, fmt):
     if ct.GetAttr(TMP,'rs_sample_req'):
       ct.SetAttr(TMP,'rs_sample_req', False)
       ct.GetAttr(TMP,'rs_sample_list').append((x_marker_robot, x_marker_rs))
-      print 'Updated the sample list.'
-      print 'sample_list [(x_marker_robot,x_marker_rs)]:'
-      print '['
+      print('Updated the sample list.')
+      print('sample_list [(x_marker_robot,x_marker_rs)]:')
+      print('[')
       for (x_marker_robot,x_marker_rs) in ct.GetAttr(TMP,'rs_sample_list'):
-        print '  {},'.format([x_marker_robot,x_marker_rs])
-      print ']'
+        print('  {},'.format([x_marker_robot,x_marker_rs]))
+      print(']')
 
   if ct.GetAttr(TMP,'rs_optimization_req'):
     ct.SetAttr(TMP,'rs_optimization_req', False)
     #Executing the optimization to obtain the RS pose in the robot frame.
     x_rs= OptimizeRSPose(ct, ct.GetAttr(TMP,'rs_sample_list'))
-    print 'Optimization completed.'
-    print '  x_rs=',x_rs
+    print('Optimization completed.')
+    print('  x_rs=',x_rs)
     ##TEST: Optimization with fixed Q:
     #q_fixed= [0.7070980597795835, -0.7068790570623428, -0.01794432184991827, 0.003511958990169429]
     #x_rs= OptimizeRSPoseWithFixedQ(ct, ct.GetAttr(TMP,'rs_sample_list'), q_fixed)
@@ -166,8 +166,8 @@ def ImageCallback(ct, msg, fmt):
   if ct.GetAttr(TMP,'rs_print_req'):
     ct.SetAttr(TMP,'rs_print_req', False)
     x_cam= TfOnce(ct.robot.BaseFrame, 'camera_color_optical_frame')
-    print 'x_marker_robot=',x_marker_robot
-    print 'x_marker_rs=',Transform(x_cam, x_marker_rs)
+    print('x_marker_robot=',x_marker_robot)
+    print('x_marker_rs=',Transform(x_cam, x_marker_rs))
 
 
 def Run(ct,*args):
@@ -223,12 +223,12 @@ def Run(ct,*args):
   ct.SetAttr(TMP,'rs_print_req', False)
 
   if ct.HasAttr(TMP,'rs_sample_list'):
-    print 'Previous calibration data found. Do you want to continue from that?'
-    print '  # of samples:',len(ct.GetAttr(TMP,'rs_sample_list'))
+    print('Previous calibration data found. Do you want to continue from that?')
+    print('  # of samples:',len(ct.GetAttr(TMP,'rs_sample_list')))
     if AskYesNo():
-      print 'Keeping the sample list'
+      print('Keeping the sample list')
     else:
-      print 'Resetting the sample list'
+      print('Resetting the sample list')
       ct.SetAttr(TMP,'rs_sample_list', [])
   else:
     ct.SetAttr(TMP,'rs_sample_list', [])
@@ -244,13 +244,13 @@ def Run(ct,*args):
   ct.AddSub('rs_image', topic, sensor_msgs.msg.Image, lambda msg:ImageCallback(ct,msg,fmt))
 
   try:
-    print '''Keyboard operation:
+    print('''Keyboard operation:
     - q: quit.
     - space: add the current observation to the sample.
     - o: run the optimization.
     - a: add the current observation to the sample and run the optimization.
     - p: print the current observation.
-'''
+''')
     rate_adjuster= rospy.Rate(20)
     while not rospy.is_shutdown():
       if ct.GetAttr(TMP,'rs_image') is not None:

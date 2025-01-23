@@ -1,4 +1,4 @@
-#! /usr/bin/env python
+#! /usr/bin/env python3
 import roslib; roslib.load_manifest('ay_trick')
 import rospy
 from core_tool import *
@@ -89,19 +89,19 @@ class TCUITool(object):
     #exit_locker= threading.RLock()
     #with exit_locker:
     if not self.done_exit_proc:
-      print 'Exiting at %r...' % where
+      print('Exiting at %r...' % where)
       self.SaveHistory()
       if ct.Exists('_exit'):
         ct.Run('_exit')
       else:
-        print '(info: script _exit does not exist)'
+        print('(info: script _exit does not exist)')
       rospy.signal_shutdown('quit...')
-      print 'TCoreTool.Cleanup...'
+      print('TCoreTool.Cleanup...')
       ct.Cleanup()
       self.done_exit_proc= True
 
   def SaveHistory(self):
-    print 'Save history into ',self.hist_file
+    print('Save history into ',self.hist_file)
     self.write_history_file(self.hist_file)
 
   def Start(self):
@@ -109,7 +109,7 @@ class TCUITool(object):
     if ct.Exists('_default'):
       ct.Run('_default')
     else:
-      print '(info: script _default does not exist)'
+      print('(info: script _default does not exist)')
 
     self.thread_cui= threading.Thread(name='thread_cui', target=self.Interface)
     self.thread_cui.start()
@@ -121,7 +121,7 @@ class TCUITool(object):
       if ct.robot is not None:  caret= '%s:trick or quit|%s> '%(ct.robot.Name,ct.robot.ArmStrS())
       else:  caret= 'trick or quit> '
       try:
-        cmd_raw= raw_input(caret).strip()
+        cmd_raw= input(caret).strip()
       except EOFError:
         self.running= False
         continue
@@ -134,11 +134,11 @@ class TCUITool(object):
           continue
         else:
           res= ParseAndRun(ct, cmd_raw)
-          if res is not None:  print res
+          if res is not None:  print(res)
       except Exception as e:
         PrintException(e,' in CUI')
         c1,c2,ce= ACol.I(4,1,None)
-        print '%sCheck the command line: %s%s %s' % (c1, c2,cmd_raw, ce)
+        print('%sCheck the command line: %s%s %s' % (c1, c2,cmd_raw, ce))
 
     self.Exit('the end of TCUITool.Interface',wait_cui=False)
 
@@ -146,7 +146,7 @@ class TCUITool(object):
 if __name__ == '__main__':
   rospy.init_node('cui_tool{}'.format(os.getpid()))
   cui= TCUITool()
-  print 'CUITool:',rospy.get_name()
+  print('CUITool:',rospy.get_name())
   cui.Start()
   rospy.spin()
   cui.Exit('__main__')

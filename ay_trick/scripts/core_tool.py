@@ -1,6 +1,7 @@
-#! /usr/bin/env python
+#! /usr/bin/env python3
 import roslib; roslib.load_manifest('ay_trick')
 import pkgutil
+import importlib
 from ay_py.core import *
 from ay_py.ros import *
 
@@ -8,7 +9,7 @@ from ay_py.ros import *
 TMP='*'
 
 def Import(modname):
-  return __import__(modname,globals(),globals(),modname,-1)
+  return importlib.import_module(modname)
 
 
 class TCoreTool(TROSUtil):
@@ -70,13 +71,13 @@ class TCoreTool(TROSUtil):
     #self.stopRecord()
     self.Cleanup()
     super(TCoreTool,self).__del__()
-    print 'TCoreTool: done',self
+    print('TCoreTool: done',self)
 
   def Cleanup(self):
     #NOTE: cleaning-up order is important. consider dependency
 
     #Check the thread lockers status:
-    print 'Count of attr_locker:',self.attr_locker._RLock__count
+    #print('Count of attr_locker:',self.attr_locker._is_owned())
 
     self.thread_manager.StopAll()
 
@@ -88,22 +89,22 @@ class TCoreTool(TROSUtil):
       del self.robot
       self.robot= None
 
-    for k in self.callback.keys():
-      print 'Stopping callback %r...' % k,
+    for k in list(self.callback.keys()):
+      print('Stopping callback %r...' % k, end=' ')
       self.callback[k]= None  #We do not delete
-      print 'ok'
+      print('ok')
 
-    for k in self.viz.keys():
-      print 'Stop visualizing %r...' % k,
+    for k in list(self.viz.keys()):
+      print('Stop visualizing %r...' % k, end=' ')
       del self.viz[k]
-      print 'ok'
+      print('ok')
 
     super(TCoreTool,self).Cleanup()
 
-    for k in self.m.keys():
-      print 'Deleting library script cache %r...' % k,
+    for k in list(self.m.keys()):
+      print('Deleting library script cache %r...' % k, end=' ')
       del self.m[k]
-      print 'ok'
+      print('ok')
 
   @staticmethod
   def DataBaseDir():
@@ -219,12 +220,12 @@ class TCoreTool(TROSUtil):
     try:
       mod= Import(modname)
       if modname in self.loaded_libraries:
-        reload(mod)
+        importlib.reload(mod)
       else:
         self.loaded_libraries.append(modname)
     except ImportError as e:
       PrintException(e)
-      print 'Cannot import the library file: ',modname
+      print('Cannot import the library file: ',modname)
       mod= None
     return mod
 
@@ -237,13 +238,13 @@ class TCoreTool(TROSUtil):
         runfunc= mod.Run
       except AttributeError:
         runfunc= None
-        print 'Run function is not defined in:', fileid
+        print('Run function is not defined in:', fileid)
       if runfunc is not None:  return runfunc(self,*args)
       else:  return None
 
 
 if __name__ == '__main__':
-  print 'Use cui_tool.py or direct_run.py'
+  print('Use cui_tool.py or direct_run.py')
 
 
 

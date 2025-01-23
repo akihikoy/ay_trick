@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 from core_tool import *
 def Help():
   return '''Slip-based picking up.
@@ -117,22 +117,22 @@ def Run(ct,*args):
   if command=='on':
     arm= args[0] if len(args)>0 else ct.robot.Arm
     if 'vs_pickup'+LRToStrS(arm) in ct.thread_manager.thread_list:
-      print 'vs_pickup'+LRToStrS(arm),'is already on'
+      print('vs_pickup'+LRToStrS(arm),'is already on')
 
     if not all(ct.Run('fv.fv','is_active',arm)):
       ct.Run('fv.fv','on',arm)
 
-    print 'Turn on:','vs_pickup'+LRToStrS(arm)
+    print('Turn on:','vs_pickup'+LRToStrS(arm))
     ct.thread_manager.Add(name='vs_pickup'+LRToStrS(arm), target=lambda th_info: PickupLoop(th_info,ct,arm))
 
   elif command=='off':
     arm= args[0] if len(args)>0 else ct.robot.Arm
-    print 'Turn off:','vs_pickup'+LRToStrS(arm)
+    print('Turn off:','vs_pickup'+LRToStrS(arm))
     ct.thread_manager.Stop(name='vs_pickup'+LRToStrS(arm))
 
   elif command=='clear':
-    print 'Turn off:','vs_pickup'+LRToStrS(RIGHT)
-    print 'Turn off:','vs_pickup'+LRToStrS(LEFT)
+    print('Turn off:','vs_pickup'+LRToStrS(RIGHT))
+    print('Turn off:','vs_pickup'+LRToStrS(LEFT))
     ct.thread_manager.Stop(name='vs_pickup'+LRToStrS(RIGHT))
     ct.thread_manager.Stop(name='vs_pickup'+LRToStrS(LEFT))
 

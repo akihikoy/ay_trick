@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 from core_tool import *
 def Help():
   return '''Infer a pose of an object.
@@ -49,10 +49,10 @@ def Run(ct,*args):
     else:
       method= ''
       if displavel>0:
-        print 'Some of following are missing:'
-        print '  grabber_handid=',grabber_handid
-        print '  grabber_wrist=',grabber_wrist
-        print '  l_x_grab=',lo_x_grab
+        print('Some of following are missing:')
+        print('  grabber_handid=',grabber_handid)
+        print('  grabber_wrist=',grabber_wrist)
+        print('  l_x_grab=',lo_x_grab)
 
   #Infer x when obj is on a kinematics chain:
   elif method=='fk':
@@ -63,36 +63,36 @@ def Run(ct,*args):
     else:
       method= ''
       if displavel>0:
-        print 'Some of following are missing:'
-        print '  [kinematics_chain][parent_arm]=',parent_arm_id
-        print '  [lx]=',lx
+        print('Some of following are missing:')
+        print('  [kinematics_chain][parent_arm]=',parent_arm_id)
+        print('  [lx]=',lx)
 
   #Infer x when reference marker is known:
   elif method=='refm':
     ref_marker_id= ct.GetAttrOr(None,obj,'ref_marker_id')
     ref_marker_pose= ct.GetAttrOr(None,obj,'ref_marker_pose')
     if None not in (ref_marker_id,ref_marker_pose):
-      if displavel>0:  print '###infer from ref',ref_marker_id
+      if displavel>0:  print('###infer from ref',ref_marker_id)
       x_m_ref= ct.ARX(ref_marker_id)
       ct.SetAttr(obj,'x',  TransformRightInv(x_m_ref, ref_marker_pose))
     else:
       method= ''
       if displavel>0:
-        print 'Some of following are missing:'
-        print '  ref_marker_id=',ref_marker_id
-        print '  ref_marker_pose=',ref_marker_pose
+        print('Some of following are missing:')
+        print('  ref_marker_id=',ref_marker_id)
+        print('  ref_marker_pose=',ref_marker_pose)
 
   #Infer x when base marker is known:
   elif method=='basem':
     base_marker_id= ct.GetAttrOr(None,obj,'base_marker_id')
     if None is not base_marker_id:
-      if displavel>0:  print '###infer from base',base_marker_id
+      if displavel>0:  print('###infer from base',base_marker_id)
       ct.SetAttr(obj,'x',  ct.ARX(base_marker_id))
     else:
       method= ''
       if displavel>0:
-        print 'Some of following are missing:'
-        print '  base_marker_id=',base_marker_id
+        print('Some of following are missing:')
+        print('  base_marker_id=',base_marker_id)
 
   #If 'x' is inferred in some way, show the result and exit:
   if method!='':

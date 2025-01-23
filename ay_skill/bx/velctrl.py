@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 from core_tool import *
 import std_msgs.msg
 def Help():
@@ -13,11 +13,9 @@ def Help():
         velctrl.Finish()
     '''
 def Run(ct,*args):
-  print 'Error:',Help()
+  print('Error:',Help())
 
-class TVelCtrl(object):
-  __metaclass__= TMultiSingleton
-
+class TVelCtrl(object, metaclass=TMultiSingleton):
   #ct: core_tool.
   #rate: Control time cycle in Hz.
   def __init__(self, arm, ct, rate=None):
@@ -46,7 +44,7 @@ class TVelCtrl(object):
 
     ct.pub.js_rate.publish(self.rate)
 
-    dq_max= max(map(abs,dq))
+    dq_max= max(list(map(abs,dq)))
     if dq_max>dq_lim:  dq= [v*(dq_lim/dq_max) for v in dq]
 
     q= ct.robot.Q(arm=arm)

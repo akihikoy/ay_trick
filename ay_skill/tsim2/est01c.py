@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 from core_tool import *
 SmartImportReload('tsim2.est01')
 from tsim2.est01 import (
@@ -30,7 +30,7 @@ def HiddenstCallback(ct,est01_l,hidden_st):
   else:
     estimate= EstimateHiddenStates(ct,logdir,opt_conf)
 
-  for key,value in estimate.iteritems():
+  for key,value in estimate.items():
     hidden_st[key]= value
 
 
@@ -62,7 +62,7 @@ def Run(ct,*args):
   presets= l.opt_conf['mtr_presets']
   if presets is not None and len(presets)>0:
     #presets= ('natto','ketchup')
-    for key,value in SetMaterial(ct, preset=presets[RandI(len(presets))]).iteritems():
+    for key,value in SetMaterial(ct, preset=presets[RandI(len(presets))]).items():
       l.opt_conf['config'][key]= value
 
   #Make l.logdir+'database.yaml' blank to reset data for estimating hidden state.

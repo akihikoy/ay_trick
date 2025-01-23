@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 from core_tool import *
 def Help():
   return '''Visualize a specified object.
@@ -25,7 +25,7 @@ def VizLoop(th_info, ct, objs):
       oid= 0
       #tmpfp.write('########Time: %r\n' % rospy.Time.now())
       #print 'p0',ct.robot.sensor_locker._is_owned(),ct.robot.sensor_locker._RLock__count
-      if ct.robot.sensor_locker._RLock__count==0:  #FIXME: accessing row-level info. is this correct?
+      if not ct.robot.sensor_locker._is_owned():
         xw=[ct.robot.FK(arm=arm) for arm in range(ct.robot.NumArms)]
       else:
         xw=[None for arm in range(ct.robot.NumArms)]
@@ -37,7 +37,7 @@ def VizLoop(th_info, ct, objs):
         mid= oid
         #tmpfp.write('oid: %r\n' % oid)
         #print 'p0',ct.robot.sensor_locker._is_owned(),ct.robot.sensor_locker._RLock__count
-        if m_infer is not None and ct.robot.sensor_locker._RLock__count==0:  #FIXME: accessing row-level info. is this correct?
+        if m_infer is not None and not ct.robot.sensor_locker._is_owned():
           m_infer.Run(ct, obj)
           if ct.HasAttr(obj+'-cvste'):  #The mouth is tracked by cvstedge1
             m_infer.Run(ct, obj+'-cvste')
@@ -95,12 +95,12 @@ def VizLoop(th_info, ct, objs):
             mid= viz.AddCoord(x_pour_l, scale=[0.05,0.002], alpha=1.0, mid=mid)
           l_p_pour_e_set= ct.GetAttrOr(None, obj,'l_p_pour_e_set')
           if l_p_pour_e_set is not None:
-            p_pour_e_set= map(lambda p: Transform(x_o,p), l_p_pour_e_set)
+            p_pour_e_set= [Transform(x_o,p) for p in l_p_pour_e_set]
             #print p_pour_e_set
             mid= viz.AddPoints(p_pour_e_set, scale=[0.008,0.008], rgb=viz.ICol(0), alpha=1.0, mid=mid)
             mid= viz.AddPolygon(p_pour_e_set, scale=[0.004], rgb=[1,0.5,0.5], alpha=1.0, mid=mid)
             if x_o_cvste is not None:  #The mouth is tracked by cvstedge1
-              p_pour_e_set2= map(lambda p: Transform(x_o_cvste,p), l_p_pour_e_set)
+              p_pour_e_set2= [Transform(x_o_cvste,p) for p in l_p_pour_e_set]
               mid= viz.AddPoints(p_pour_e_set2, scale=[0.008,0.008], rgb=viz.ICol(1), alpha=1.0, mid=mid)
           l_x_grab= ct.GetAttrOr(None, obj,'grabbed','l_x_grab')
           if l_x_grab is not None:

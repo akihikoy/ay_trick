@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 from core_tool import *
 def Help():
   return '''Track an external force.
@@ -64,7 +64,7 @@ def Run(ct,*args):
   if command=='on':
     arm= args[0] if len(args)>0 else ct.robot.Arm
     if 'vs_trackf'+LRToStrS(arm) in ct.thread_manager.thread_list:
-      print 'vs_trackf'+LRToStrS(arm),'is already on'
+      print('vs_trackf'+LRToStrS(arm),'is already on')
 
     if not all(ct.Run('fv.fv','is_active',arm)):
       ct.Run('fv.fv','on',arm)
@@ -72,17 +72,17 @@ def Run(ct,*args):
     ct.Run('fv.grasp','off',arm)
     ct.Run('fv.hold','off',arm)
 
-    print 'Turn on:','vs_trackf'+LRToStrS(arm)
+    print('Turn on:','vs_trackf'+LRToStrS(arm))
     ct.thread_manager.Add(name='vs_trackf'+LRToStrS(arm), target=lambda th_info: TrackingLoop(th_info,ct,arm))
 
   elif command=='off':
     arm= args[0] if len(args)>0 else ct.robot.Arm
-    print 'Turn off:','vs_trackf'+LRToStrS(arm)
+    print('Turn off:','vs_trackf'+LRToStrS(arm))
     ct.thread_manager.Stop(name='vs_trackf'+LRToStrS(arm))
 
   elif command=='clear':
-    print 'Turn off:','vs_trackf'+LRToStrS(RIGHT)
-    print 'Turn off:','vs_trackf'+LRToStrS(LEFT)
+    print('Turn off:','vs_trackf'+LRToStrS(RIGHT))
+    print('Turn off:','vs_trackf'+LRToStrS(LEFT))
     ct.thread_manager.Stop(name='vs_trackf'+LRToStrS(RIGHT))
     ct.thread_manager.Stop(name='vs_trackf'+LRToStrS(LEFT))
 

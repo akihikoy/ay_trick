@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 from core_tool import *
 import std_msgs.msg
 def Help():
@@ -18,15 +18,15 @@ def Run(ct,*args):
   try:
     ct.AddPub('urscript','/ur_driver/URScript',std_msgs.msg.String)
     state= 'not_teach'
-    print 'Current mode:',state
-    print 'Hit the space key to change the mode.'
+    print('Current mode:',state)
+    print('Hit the space key to change the mode.')
     kbhit= TKBHit()
     while not rospy.is_shutdown():
       c= kbhit.KBHit()
       if c=='q':  break
       elif c==' ':
         state= 'not_teach' if state=='teach' else 'teach'
-        print 'Current mode:',state
+        print('Current mode:',state)
         if state=='teach':
           SendReq(ct,'teach_mode()\n')
         elif state=='not_teach':

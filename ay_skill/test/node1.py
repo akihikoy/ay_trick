@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 from core_tool import *
 def Help():
   return '''Test of using a SCRIPT as a standalone ROS node.
@@ -27,5 +27,5 @@ def Run(ct,*args):
     t_elapsed= (rospy.Time.now()-t_start).to_sec()
     value= eq(t_elapsed)
     ct.pub[topic_name].publish(value)
-    print 'at {}, value: {}'.format(t_elapsed,value)
+    print('at {}, value: {}'.format(t_elapsed,value))
     rospy.sleep(0.1)

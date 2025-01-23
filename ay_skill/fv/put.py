@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 from core_tool import *
 def Help():
   return '''Automatic put motion: stop putting when it detects force change or slip.
@@ -108,7 +108,7 @@ def PuttingLoop(th_info, ct, arm, options):
 
       last_dq= dq
 
-    print ''
+    print('')
 
   finally:
     velctrl.Step([0.0]*ct.robot.DoF(arm))
@@ -134,7 +134,7 @@ def Run(ct,*args):
     if 'log' in user_options:  options['log']= user_options['log']
 
     if 'vs_put'+LRToStrS(arm) in ct.thread_manager.thread_list:
-      print 'vs_put'+LRToStrS(arm),'is already on'
+      print('vs_put'+LRToStrS(arm),'is already on')
 
     if not all(ct.Run('fv.fv','is_active',arm)):
       ct.Run('fv.fv','on',arm)

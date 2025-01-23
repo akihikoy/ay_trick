@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 from core_tool import *
 def Help():
   return '''Test of in-hand manipulation ver 2.
@@ -28,7 +28,7 @@ def ManipLoop(th_info, ct, arm):
   get_value= lambda lst,idx: lst[idx] if isinstance(lst,list) else lst
   while thread_cond():
     if abs(theta0-get_theta())>target_angle:
-      print 'Done! target=', RadToDeg(target_angle)
+      print('Done! target=', RadToDeg(target_angle))
       g_pos-= get_value(ct.GetAttr('fv_ctrl','min_gstep'),arm)
       ct.robot.MoveGripper(pos=g_pos, arm=arm, max_effort=ct.GetAttr('fv_ctrl','effort')[arm], speed=1.0, blocking=False)
       break
@@ -59,7 +59,7 @@ def ManipLoop(th_info, ct, arm):
     #Just go back to g_pos0
     ct.robot.MoveGripper(pos=g_pos0, arm=arm, max_effort=ct.GetAttr('fv_ctrl','effort')[arm], speed=1.0, blocking=True)
 
-    print RadToDeg(theta0-get_theta()), RadToDeg(get_theta())
+    print(RadToDeg(theta0-get_theta()), RadToDeg(get_theta()))
 
   #print 'Open the gripper and start object detection?'
   #if ct.AskYesNo():
@@ -77,7 +77,7 @@ def Run(ct,*args):
   if command=='on':
     arm= args[0] if len(args)>0 else ct.robot.Arm
     if 'vs_inhand2'+LRToStrS(arm) in ct.thread_manager.thread_list:
-      print 'vs_inhand2'+LRToStrS(arm),'is already on'
+      print('vs_inhand2'+LRToStrS(arm),'is already on')
 
     if not all(ct.Run('fv.fv','is_active',arm)):
       ct.Run('fv.fv','on',arm)

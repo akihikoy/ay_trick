@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 from core_tool import *
 def Help():
   return '''Simple example of FingerVision-based robot control.
@@ -25,7 +25,7 @@ def Run(ct,*args):
 
       obj_area= 0.5*(fv_data.obj_area[0] + fv_data.obj_area[1])
       g_trg= min(grange[1],max(grange[0],grange[1] - 5.0*obj_area))
-      print obj_area, g_trg
+      print(obj_area, g_trg)
       ct.robot.MoveGripper(g_trg,speed=100)
       rate.sleep()
 

@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 from core_tool import *
 def Help():
   return '''Move arm to target end-effector pose with Cartesian interpolation.
@@ -16,5 +16,5 @@ def Run(ct,*args):
   if len(x_trg)==3:  x_trg= list(x_trg)+x[3:]
   elif len(x_trg)==4:  x_trg= x[:3]+list(x_trg)
   assert(len(x_trg)==7)
-  print 'Move to x:',x_trg
+  print('Move to x:',x_trg)
   ct.robot.MoveToXI(x_trg, dt)

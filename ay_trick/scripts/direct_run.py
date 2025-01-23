@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 #\file    direct_run.py
 #\brief   Directly run motion scripts without running cui_tool.py.
 #\author  Akihiko Yamaguchi, info@akihikoy.net
@@ -28,41 +28,41 @@ if __name__ == '__main__':
   motions= sys.argv[1:]
   rosarg= re.compile(r'^[a-zA-Z0-9_\/]+\:=.*')
   motions= [motion for motion in motions if not rosarg.match(motion)]
-  print motions
+  print(motions)
 
   try:
 
     rospy.init_node('direct_run{}'.format(os.getpid()))
     ct= TCoreTool()
-    print 'DirectRun:',rospy.get_name()
+    print('DirectRun:',rospy.get_name())
 
     if ct.Exists('_default'):
-      print 'Running _default...'
+      print('Running _default...')
       ct.Run('_default')
-      print 'Waiting thread _default...'
+      print('Waiting thread _default...')
       ct.thread_manager.Join('_default')
     else:
-      print '(info: script _default does not exist)'
+      print('(info: script _default does not exist)')
 
     for motion in motions:
       CPrint(2,'+++Start running:',motion)
       #res= ct.Run(motion)
       res= ParseAndRun(ct, motion)
-      if res!=None:  print 'Result:',res
+      if res!=None:  print('Result:',res)
       CPrint(2,'+++Finished running:',motion)
 
     if ct.Exists('_exit'):
-      print 'Running _exit...'
+      print('Running _exit...')
       ct.Run('_exit')
     else:
-      print '(info: script _exit does not exist)'
+      print('(info: script _exit does not exist)')
 
     rospy.signal_shutdown('Finished.')
-    print 'TCoreTool.Cleanup...'
+    print('TCoreTool.Cleanup...')
     ct.Cleanup()
 
   except Exception as e:
     PrintException(e,' in CUI')
     rospy.signal_shutdown('Finished due to the exception.')
-    print 'TCoreTool.Cleanup...'
+    print('TCoreTool.Cleanup...')
     ct.Cleanup()

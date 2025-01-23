@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 from core_tool import *
 def Help():
   return '''Get end-effector pose by solving forward kinematics.
@@ -11,4 +11,4 @@ def Run(ct,*args):
   arm= args[0] if len(args)>0 else ct.robot.Arm
   q= args[1] if len(args)>1 else ct.robot.Q(arm=arm)
   x= ct.robot.FK(q=q, arm=arm)
-  print 'End-effector pose of {arm}-arm= {x}'.format(arm=ct.robot.ArmStr(arm), x=list(x))
+  print('End-effector pose of {arm}-arm= {x}'.format(arm=ct.robot.ArmStr(arm), x=list(x)))

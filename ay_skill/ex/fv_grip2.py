@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 from core_tool import *
 import std_msgs
 def Help():
@@ -11,7 +11,7 @@ def Callback(msg, ct):
   grange= ct.robot.GripperRange()
   red_area= msg.data
   g_trg= min(grange[1],max(grange[0],grange[1] - 5.0*red_area))
-  print red_area, g_trg
+  print(red_area, g_trg)
   ct.robot.MoveGripper(g_trg,speed=100)
 
 def Run(ct,*args):

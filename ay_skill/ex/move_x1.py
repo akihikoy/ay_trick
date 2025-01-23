@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 from core_tool import *
 def Help():
   return '''Move arm to target end-effector pose.
@@ -12,5 +12,5 @@ def Run(ct,*args):
   dp= args[1]
   x= list(ct.robot.FK(arm=arm))  #Current end-effector pose
   x_trg= [x[d]+dp[d] for d in range(3)] + x[3:]  #Target
-  print 'Moving {arm}-arm to {x}'.format(arm=LRToStr(arm), x=x_trg)
+  print('Moving {arm}-arm to {x}'.format(arm=LRToStr(arm), x=x_trg))
   ct.robot.MoveToX(x_trg, dt=4.0, arm=arm)

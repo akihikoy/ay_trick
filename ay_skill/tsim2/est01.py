@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 from core_tool import *
 SmartImportReload('tsim.dpl_cmn')
 from tsim.dpl_cmn import *
@@ -215,7 +215,7 @@ def Execute(ct,l,observe_hidden_st):
     #TEST: Heuristic init guess
     pc_rcv= np.array(l.xs.n0['ps_rcv'].X).reshape(4,3).mean(axis=0)  #Center of ps_rcv
     l.xs.n0['p_pour_trg0']= SSA(Vec([-0.3,0.35])+Vec([pc_rcv[0],pc_rcv[2]]))  #A bit above of p_pour_trg
-    for key,value in hidden_st.iteritems():
+    for key,value in hidden_st.items():
       l.xs.n0[key]= value
     res= l.dpl.Plan('n0', l.xs.n0)
     l.idb.n0= l.dpl.DB.AddToSeq(parent=None,name='n0',xs=l.xs.n0)
@@ -269,7 +269,7 @@ def Execute(ct,l,observe_hidden_st):
       l.xs.n3= CopyXSSA(l.xs.prev)
       if repeated:
         #Delete actions and selections (e.g. skill) to plan again from initial guess.
-        for key in l.xs.n3.keys():
+        for key in list(l.xs.n3.keys()):
           if l.dpl.d.SpaceDefs[key].Type in ('action','select'):
             del l.xs.n3[key]
       InsertDict(l.xs.n3, ObserveXSSA(l,l.xs.prev,obs_keys_after_grab+('da_trg',)))
@@ -423,7 +423,7 @@ def ConfigCallback(ct,l,sim):
   #l.config.ContactBounce= 0.1
 
   #InsertDict(l.config.__dict__, l.opt_conf['config'])
-  for key,value in l.opt_conf['config'].iteritems():
+  for key,value in l.opt_conf['config'].items():
     setattr(l.config, key, value)
 
   if l.rcv_size=='static':
@@ -464,7 +464,7 @@ def GetHiddenSt(l):
     'material2_true': SSA([l.config.ContactBounce, l.config.ContactBounceVel,
                            l.config.ViscosityParam1*1.0e6, l.config.ViscosityMaxDist]),  #True value for log.
     }
-  for key,value in l.opt_conf['hidden_st'].iteritems():
+  for key,value in l.opt_conf['hidden_st'].items():
     hidden_st[key]= value
   if 'hiddenst_callback' in l.opt_conf and l.opt_conf['hiddenst_callback']!=None:
     l.opt_conf['hiddenst_callback'](l,hidden_st)
@@ -502,7 +502,7 @@ def Run(ct,*args):
     #Setting common material among episodes:
     #presets= ('bounce','nobounce','natto','ketchup')
     presets= ('natto','ketchup')
-    for key,value in SetMaterial(ct, preset=presets[RandI(len(presets))]).iteritems():
+    for key,value in SetMaterial(ct, preset=presets[RandI(len(presets))]).items():
       opt_conf['config'][key]= value
     ##{{{Replay:
     #l.logdir= '/tmp/dpl03b/'
@@ -589,7 +589,7 @@ def Run(ct,*args):
   ct.log_dpl= l.dpl  #for log purpose
   ct.log_mm= l.mm
 
-  print 'Copying',PycToPy(__file__),'to',PycToPy(l.logdir+os.path.basename(__file__))
+  print('Copying',PycToPy(__file__),'to',PycToPy(l.logdir+os.path.basename(__file__)))
   CopyFile(PycToPy(__file__),PycToPy(l.logdir+os.path.basename(__file__)))
 
   count= 0
@@ -624,7 +624,7 @@ def Run(ct,*args):
     LogDPL(l)
     if count>=l.num_episodes:  break
     if l.interactive:
-      print 'Continue?'
+      print('Continue?')
       if not AskYesNo():  break
   fp.close()
 

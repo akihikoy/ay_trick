@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 from core_tool import *
 SmartImportReload('tsim.dpl_cmn')
 from tsim.dpl_cmn import *
@@ -9,7 +9,7 @@ def Help():
   Usage: tsim2.test_replay'''
 
 def TestConfigCallback(ct,l,sim):
-  for key,value in l.opt_conf['config'].iteritems():
+  for key,value in l.opt_conf['config'].items():
     setattr(l.config, key, value)
 
   #config= {key: getattr(l.config,key) for key in l.config.__slots__}

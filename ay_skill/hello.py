@@ -1,10 +1,10 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 from core_tool import *
 def Help():
   return '''Hello-world script.
   Usage: hello'''
 def Run(ct,*args):
-  print 'Hello World!'
-  print 'This is a script.'
-  print 'We have a CoreTool object:', ct
+  print('Hello World!')
+  print('This is a script.')
+  print('We have a CoreTool object:', ct)
   return 'Bye'

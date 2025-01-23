@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 from core_tool import *
 import six.moves.cPickle as pickle
 import gzip
@@ -25,7 +25,7 @@ def Run(ct,*args):
 
   try:
     with TKBHit() as kbhit:
-      print '''q: Quit.\nSpace/r: Record.'''
+      print('''q: Quit.\nSpace/r: Record.''')
       for c in ('rgb','depth'):  cv2.namedWindow(c)
       rec_req= False
       while not rospy.is_shutdown():
@@ -63,7 +63,7 @@ def Run(ct,*args):
           rs.msg_rgb= None
           #Save rs object (TContainer):
           log_file_name= '{}/{}{}{}'.format(data_dir, prefix, timestamp, suffix)
-          with open(log_file_name, 'w') as log_fp:
+          with open(log_file_name, 'wb') as log_fp:
             pickle.dump(rs,log_fp)
           os.system('gzip {0}'.format(log_file_name))
           CPrint(3,'Saved:',log_file_name+'.gz','({:.2f}s)'.format((rospy.Time.now()-t_start).to_sec()))

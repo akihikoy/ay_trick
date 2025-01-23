@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 from core_tool import *
 import baxter_core_msgs
 def Help():
@@ -108,24 +108,24 @@ def Run(ct,*args):
     arm= args[0] if len(args)>0 else ct.robot.Arm
     ctrl_type= args[1] if len(args)>1 else 'position'
     if 'bxtrackf'+LRToStrS(arm) in ct.thread_manager.thread_list:
-      print 'bxtrackf'+LRToStrS(arm),'is already on'
+      print('bxtrackf'+LRToStrS(arm),'is already on')
 
     #ct.SetAttr(TMP,'bxwrench', [[],[]])
     #ct.AddSub('estate2_'+LRToStrS(arm), '/robot/limb/%s/endpoint_state'%LRTostr(arm), baxter_core_msgs.msg.EndpointState,
              #lambda msg,ct=ct,arm=arm: Callback(ct,msg,arm))
 
-    print 'Turn on:','bxtrackf'+LRToStrS(arm)
+    print('Turn on:','bxtrackf'+LRToStrS(arm))
     ct.thread_manager.Add(name='bxtrackf'+LRToStrS(arm), target=lambda th_info: TrackingLoop(th_info,ct,arm,ctrl_type))
 
   elif command=='off':
     arm= args[0] if len(args)>0 else ct.robot.Arm
-    print 'Turn off:','bxtrackf'+LRToStrS(arm)
+    print('Turn off:','bxtrackf'+LRToStrS(arm))
     ct.thread_manager.Stop(name='bxtrackf'+LRToStrS(arm))
     #ct.DelSub('estate2_'+LRToStrS(arm))
 
   elif command=='clear':
-    print 'Turn off:','bxtrackf'+LRToStrS(RIGHT)
-    print 'Turn off:','bxtrackf'+LRToStrS(LEFT)
+    print('Turn off:','bxtrackf'+LRToStrS(RIGHT))
+    print('Turn off:','bxtrackf'+LRToStrS(LEFT))
     ct.thread_manager.Stop(name='bxtrackf'+LRToStrS(RIGHT))
     ct.thread_manager.Stop(name='bxtrackf'+LRToStrS(LEFT))
     #ct.DelSub('estate2_'+LRToStrS(RIGHT))

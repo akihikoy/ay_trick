@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 from core_tool import *
 import tf
 import tf2_ros
@@ -108,7 +108,7 @@ def Help():
     If ROBOT_NAME is omitted, we assume 'NoRobot'.
     Available ROBOT_NAME:
 {}
-  '''.format('\n'.join('      {}, {},'.format(s,ROBOT_NAME_ALIAS[s]) for s in sorted(ROBOT_NAME_ALIAS.iterkeys())))
+  '''.format('\n'.join('      {}, {},'.format(s,ROBOT_NAME_ALIAS[s]) for s in sorted(ROBOT_NAME_ALIAS.keys())))
 
 def Run(ct,*args):
   try:
@@ -119,7 +119,7 @@ def Run(ct,*args):
 
   if robot in ROBOT_NAME_ALIAS:  robot= ROBOT_NAME_ALIAS[robot]
 
-  print 'Setup robot for',robot
+  print('Setup robot for',robot)
 
   if ct.state_validity_checker is not None:
     del ct.state_validity_checker

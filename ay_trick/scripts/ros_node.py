@@ -1,4 +1,4 @@
-#! /usr/bin/env python
+#! /usr/bin/env python3
 #\file    ros_node.py
 #\brief   ROS node version of running motion script interface.
 #\author  Akihiko Yamaguchi, info@akihikoy.net
@@ -68,10 +68,14 @@ class TStdInFromBuffer(object):
       self.buf[0]= self.buf[0][n:]
     else:  #n>len(self.buf[0])
       s= self.buf.pop(0)
-      if not self.is_curses_term:  sys.stdout.write(s)
+      if not self.is_curses_term:
+        sys.stdout.write(s)
+        sys.stdout.flush()
       echo= False
       s+= self.read(n-len(s))
-    if echo and not self.is_curses_term: sys.stdout.write(s)
+    if echo and not self.is_curses_term:
+      sys.stdout.write(s)
+      sys.stdout.flush()
     return s
   def readline(self, n=None):
     while len(self.buf)==0:
@@ -87,7 +91,9 @@ class TStdInFromBuffer(object):
           self.buf[0]= self.buf[0][i+1:]
       else:
         s= self.buf.pop(0)
-        if not self.is_curses_term:  sys.stdout.write(s)
+        if not self.is_curses_term:
+          sys.stdout.write(s)
+          sys.stdout.flush()
         echo= False
         s+= self.readline()
     elif n==len(self.buf[0]):
@@ -97,10 +103,14 @@ class TStdInFromBuffer(object):
       self.buf[0]= self.buf[0][n:]
     else:  #n>len(self.buf[0])
       s= self.buf.pop(0)
-      if not self.is_curses_term:  sys.stdout.write(s)
+      if not self.is_curses_term:
+        sys.stdout.write(s)
+        sys.stdout.flush()
       echo= False
       s+= self.readline(n-len(s))
-    if echo and not self.is_curses_term: sys.stdout.write(s)
+    if echo and not self.is_curses_term:
+      sys.stdout.write(s)
+      sys.stdout.flush()
     return s
   def flush(self):
     pass
@@ -118,13 +128,13 @@ class TROSNode(object):
 
     try:
       if ct.Exists('_default'):
-        print 'Running _default...'
+        print('Running _default...')
         self._running= True
         ct.Run('_default')
-        print 'Waiting thread _default...'
+        print('Waiting thread _default...')
         ct.thread_manager.Join('_default')
       else:
-        print '(info: script _default does not exist)'
+        print('(info: script _default does not exist)')
     except Exception as e:
       PrintException(e,' in ROSNode')
     finally:
@@ -146,16 +156,16 @@ class TROSNode(object):
     global ct
     try:
       if ct.Exists('_exit'):
-        print 'Running _exit...'
+        print('Running _exit...')
         self._running= True
         ct.Run('_exit')
       else:
-        print '(info: script _exit does not exist)'
+        print('(info: script _exit does not exist)')
     except Exception as e:
       PrintException(e,' in ROSNode')
     finally:
       self._running= False
-      print 'TCoreTool.Cleanup...'
+      print('TCoreTool.Cleanup...')
       ct.Cleanup()
       ct= None
 
@@ -175,7 +185,7 @@ class TROSNode(object):
       self._result= res
       self._success= True
       self._message= ''
-      if res!=None:  print 'Result:',res
+      if res!=None:  print('Result:',res)
       CPrint(2,'+++Finished running:',cmd)
     except Exception as e:
       self._success= False

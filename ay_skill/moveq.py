@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 from core_tool import *
 def Help():
   return '''Move to a given joint positions.
@@ -51,5 +51,5 @@ def Run(ct,*args):
       keyposes[0].append([0, 0.3, 0, 2.4, 0, -0.7, -1.5708])
     q_trg= keyposes[ct.robot.Arm][q_trg]
   assert(len(q_trg)==ct.robot.DoF())
-  print 'Move to q:',q_trg
+  print('Move to q:',q_trg)
   ct.robot.MoveToQ(q_trg, dt)

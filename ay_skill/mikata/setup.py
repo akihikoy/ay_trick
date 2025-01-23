@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 from core_tool import *
 
 def Help():
@@ -32,10 +32,10 @@ def Run(ct,*args):
       ]
   else:  raise Exception('Invalid mode:',mode)
   for cmd in command_list:
-    print ''
+    print('')
     CPrint(2,'Running command: > ',cmd[0],', '.join(map(repr,cmd[1:])) )
     if not no_ask:
-      print '  y:Continue, s:Skip, q:Quit'
+      print('  y:Continue, s:Skip, q:Quit')
       res= KBHAskGen('y','s','q')
     else:
       res= 'y'
@@ -52,8 +52,8 @@ def Run(ct,*args):
       try:
         q= ct.robot.Q()
         g= ct.robot.GripperPos()
-        print 'The robot is ready!'
+        print('The robot is ready!')
         break
       except Exception:
-        print 'The robot is not ready...'
+        print('The robot is not ready...')
       rate.sleep()

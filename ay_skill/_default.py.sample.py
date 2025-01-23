@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 from core_tool import *
 def Help():
   return '''Default script executed at the beginning.
@@ -13,5 +13,5 @@ def Main(ct,th_info):
   ct.SetAttr('default_frame', 'base')
 
 def Run(ct,*args):
-  print 'Loading _default...'
+  print('Loading _default...')
   ct.thread_manager.Add(name='_default', target=lambda th_info,ct=ct: Main(ct,th_info))

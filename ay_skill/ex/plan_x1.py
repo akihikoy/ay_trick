@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 from core_tool import *
 def Help():
   return '''Plan a collision free path to a target end-effector pose.
@@ -16,7 +16,7 @@ def Run(ct,*args):
     x_trg= [0.72,-0.12,0.14, 0.6340761624607465,0.7359104869964589,-0.12067513962937848,0.20450106601951204]
     lw_xe= [0.0,0.0,0.0, 0.0,0.0,0.0,1.0]
   elif ct.robot.Is('Motoman'):
-    print 'Test this after running: moveq 1'
+    print('Test this after running: moveq 1')
     x_table= [0.4,0.0,0.30, 0.0,0.0,0.0,1.0]
     table_dim= [0.5,1.8,0.05]
     x_box= [0.4,-0.3,0.45, 0.0,0.0,0.0,1.0]
@@ -25,7 +25,7 @@ def Run(ct,*args):
     x_trg= [0.35, -0.3, 0.7] + list(QFromAxisAngle([0.0,1.0,0.0], math.pi*0.5))
     lw_xe= [0.0,0.0,0.0, 0.0,0.0,0.0,1.0]
   elif ct.robot.Is('Mikata'):
-    print 'Test this after running: moveq 1'
+    print('Test this after running: moveq 1')
     x_table= [0.2,0.0,-0.03, 0.0,0.0,0.0,1.0]
     table_dim= [0.1,0.1,0.01]
     x_box= [0.2,-0.18,0.075, 0.0,0.0,0.0,1.0]
@@ -34,7 +34,7 @@ def Run(ct,*args):
     x_trg= [0.096, -0.09, 0.19, 0,0,0,1]
     lw_xe= [0.0,0.0,0.0, 0.0,0.0,0.0,1.0]
   elif ct.robot.Is('UR'):
-    print 'Test this after running: moveq 2'
+    print('Test this after running: moveq 2')
     x_table= [0.2,0.0,-0.02, 0.0,0.0,0.0,1.0]
     table_dim= [0.5,0.5,0.05]
     x_box= [0.3,-0.2,0.075, 0.0,0.0,0.0,1.0]
@@ -98,7 +98,7 @@ def Run(ct,*args):
   ct.Run('adv.move_to_x', x_trg, dt, lw_xe, arm, {}, conservative)
 
 
-  print 'Clear the planning scene?'
+  print('Clear the planning scene?')
   if AskYesNo():
     #Remove table, box from the planning scene
     ct.SetAttr(TMP,'scene', LDifference(ct.GetAttrOr([],TMP,'scene'),['table','box']))

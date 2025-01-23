@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 from core_tool import *
 roslib.load_manifest('ay_util_msgs')
 import ay_util_msgs.srv

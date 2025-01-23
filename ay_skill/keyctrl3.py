@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 from core_tool import *
 import sensor_msgs.msg
 
@@ -134,7 +134,7 @@ def Run(ct,*args):
         break
 
       if state[1]=='key_h':
-        print '''\
+        print('''\
 Command:
   Joystick:
     RB: Activation
@@ -168,12 +168,12 @@ Command:
     t: Run fv.trackf4 (or fv.trackf2) 'on'/'off' arm (Tai Chi)
     y: Run fv.trackf4 (or fv.trackf2) for BOTH ARM   (Tai Chi)
     o: Run fv.tracko 'on'/'off' arm  (Proximity vision-based tracking)
-    p: Run fv.pickup2b 'on'/'off' arm (Slip-based automatic picking up) '''
+    p: Run fv.pickup2b 'on'/'off' arm (Slip-based automatic picking up) ''')
         state[1]= 'no_cmd'
 
       elif state[1]=='key_l' or state[1]=='key_r':
         arm= LEFT if state[1]=='key_l' else RIGHT
-        print 'Switched arm:',LRToStr(arm)
+        print('Switched arm:',LRToStr(arm))
         state[1]= 'no_cmd'
       elif state[1]=='key_c':
         ct.Run('calib_x')
@@ -230,7 +230,7 @@ Command:
           #ct.robot.limbs[arm].exit_control_mode()
           velctrl[arm].Finish()
           arm= state[2]
-          print 'Switched arm:',LRToStr(arm)
+          print('Switched arm:',LRToStr(arm))
         state[1]= 'no_cmd'
 
       #elif state[1]=='cmd_Y':
@@ -282,7 +282,7 @@ Command:
 
       if state[3] and state[1] in ('position','orientation'):
         q= ct.robot.Q(arm=arm)
-        vx= map(lambda x:speed_gain*0.4*x,steps)+map(lambda x:speed_gain*1.0*x,wsteps)
+        vx= [speed_gain*0.4*x for x in steps]+[speed_gain*1.0*x for x in wsteps]
         if ct.robot.DoF(arm=arm)>=6:
           dq= ToList(la.pinv(ct.robot.J(q,arm=arm))*MCVec(vx))
         else:  #e.g. Mikata Arm
@@ -310,9 +310,9 @@ Command:
         if active_holding[arm]:
           ct.robot.EndEff(arm).StopHolding()
           active_holding[arm]= False
-    for thread in filter(lambda th:th[:3]=='vs_', ct.thread_manager.thread_list):
-      print 'Turn off:',thread
+    for thread in [th for th in ct.thread_manager.thread_list if th[:3]=='vs_']:
+      print('Turn off:',thread)
       ct.thread_manager.Stop(name=thread)
 
     ct.DelSub('joy')
-    print 'Finished'
+    print('Finished')

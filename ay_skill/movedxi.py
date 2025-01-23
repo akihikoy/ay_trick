@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 from core_tool import *
 def Help():
   return '''Move arm in target end-effector pose displacement with Cartesian interpolation.
@@ -19,5 +19,5 @@ def Run(ct,*args):
     x_trg[:3]+= dx[:3]
     x_trg[3:]= MultiplyQ(QFromAxisAngle(dx[3:],la.norm(dx[3:])), x_trg[3:])
   else:  raise Exception('movedx: Unacceptable DPOSE.')
-  print 'Move to x:',x_trg
+  print('Move to x:',x_trg)
   ct.robot.MoveToXI(x_trg, dt)

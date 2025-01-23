@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 from core_tool import *
 def Help():
   return '''Set parameters for controllers with FingerVision.
@@ -86,5 +86,5 @@ def Run(ct,*args):
     file_path= os.path.join(dir_path,CONFIG_FILE)
     if os.path.exists(file_path):
       InsertDict(ctrl_params, LoadYAML(file_path))
-  for k,v in ctrl_params.iteritems():
+  for k,v in ctrl_params.items():
     ct.SetAttr('fv_ctrl',k, v)

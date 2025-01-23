@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 from core_tool import *
 def Help():
   return '''Velocity control tools for Motoman.  Do not use this directly.
@@ -12,11 +12,9 @@ def Help():
         velctrl.Finish()
     '''
 def Run(ct,*args):
-  print 'Error:',Help()
+  print('Error:',Help())
 
-class TVelCtrl(object):
-  __metaclass__= TMultiSingleton
-
+class TVelCtrl(object, metaclass=TMultiSingleton):
   #ct: core_tool.
   #rate: Control time cycle in Hz.
   def __init__(self, arm, ct, rate=40):
@@ -42,7 +40,7 @@ class TVelCtrl(object):
     dt= self.TimeStep()
     #print ' '.join(map(lambda f:'%0.2f'%f,dq))
 
-    dq_max= max(map(abs,dq))
+    dq_max= max(list(map(abs,dq)))
     if dq_max>dq_lim:  dq= [v*(dq_lim/dq_max) for v in dq]
 
     q= ct.robot.Q(arm=arm)

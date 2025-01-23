@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 from core_tool import *
 def Help():
   return '''Velocity control tools for Mikata Arm emulated with position control.
@@ -13,11 +13,9 @@ def Help():
         velctrl.Finish()
     '''
 def Run(ct,*args):
-  print 'Error:',Help()
+  print('Error:',Help())
 
-class TVelCtrl(object):
-  __metaclass__= TMultiSingleton
-
+class TVelCtrl(object, metaclass=TMultiSingleton):
   #ct: core_tool.
   #rate: Control time cycle in Hz.
   def __init__(self, arm, ct, rate=None):
@@ -45,13 +43,13 @@ class TVelCtrl(object):
     dt= self.TimeStep()
     #print ' '.join(map(lambda f:'%0.2f'%f,dq))
 
-    dq_max= max(map(abs,dq))
+    dq_max= max(list(map(abs,dq)))
     if dq_max>dq_lim:  dq= [v*(dq_lim/dq_max) for v in dq]
 
     if (rospy.Time.now()-self.t_prev).to_sec()<10.0*self.TimeStep():
       q= self.q_prev  #ct.robot.Q(arm=arm)
     else:  #For safety, when the interval between previous frame is large, we use the robot state.
-      print 'velctrl_p reset', (rospy.Time.now()-self.t_prev).to_sec(), self.TimeStep()
+      print('velctrl_p reset', (rospy.Time.now()-self.t_prev).to_sec(), self.TimeStep())
       q= ct.robot.Q(arm=arm)
     q2= [0.0]*len(q)
     for j,(qi,dqi,qmini,qmaxi) in enumerate(zip(q,dq,*ct.robot.JointLimits(arm))):
@@ -69,7 +67,7 @@ class TVelCtrl(object):
     with ct.robot.control_locker:
       #ct.robot.pub.joint_path_command.publish(traj)
       if ct.robot.Is('Mikata2') and not ct.robot.Is('sim'):
-        ct.robot.mikata.MoveTo(dict(zip(ct.robot.JointNames(arm),q2)), blocking=False)
+        ct.robot.mikata.MoveTo(dict(list(zip(ct.robot.JointNames(arm),q2))), blocking=False)
       else:
         t_traj= [0.0, dt]
         q_traj= [q, q2]

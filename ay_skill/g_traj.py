@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 from core_tool import *
 def Help():
   return '''Define functions of gripper trajectory control.
@@ -39,7 +39,7 @@ def FollowGTrajLoopSpline(th_info, ct, arm, g_traj, t_traj, callback):
     ct.robot.MoveGripper(g_trg,arm=arm,blocking=False)
     if t_elapsed>=t_traj[-1]:  break
     rate_adjuster.sleep()
-  print 'Finishing FollowGTrajLoopSpline...'
+  print('Finishing FollowGTrajLoopSpline...')
   #ct.robot.MoveGripper(g_traj[-1],arm=arm,blocking=False)
 
 #Follow a gripper trajectory (linear interpolation).
@@ -76,7 +76,7 @@ def FollowGTrajLoopLinear(th_info, ct, arm, g_traj, t_traj, callback):
     ct.robot.MoveGripper(g_trg,arm=arm,blocking=False)
     if t_elapsed>=t_traj[-1]:  break
     rate_adjuster.sleep()
-  print 'Finishing FollowGTrajLoopLinear...'
+  print('Finishing FollowGTrajLoopLinear...')
   #ct.robot.MoveGripper(g_traj[-1],arm=arm,blocking=False)
 
 '''Follow a gripper trajectory consisting of g_traj and t_traj.

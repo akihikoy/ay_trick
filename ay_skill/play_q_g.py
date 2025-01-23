@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 from core_tool import *
 FollowGTraj= SmartImportReload('g_traj').FollowGTraj
 
@@ -33,12 +33,12 @@ def Run(ct,*args):
   q_traj,g_traj,dt_traj= data['q_traj'],data['g_traj'],data['dt_traj']
   assert(len(q_traj)==len(g_traj)==len(dt_traj))
   for q,g,dt in zip(q_traj,g_traj,dt_traj):
-    print 'Move the robot and the gripper:'
-    print '  q: {}'.format(q)
-    print '  g: {}'.format(g)
-    print '  dt: {}'.format(dt)
+    print('Move the robot and the gripper:')
+    print('  q: {}'.format(q))
+    print('  g: {}'.format(g))
+    print('  dt: {}'.format(dt))
     if interactive:
-      print 'Continue?'
+      print('Continue?')
       if not KBHAskYesNo():  break
     FollowGTraj(ct, [g], [dt], blocking=False)
     ct.robot.MoveToQ(q, dt=dt, blocking=True)

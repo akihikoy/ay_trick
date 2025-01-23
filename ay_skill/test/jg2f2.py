@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 from core_tool import *
 import sensor_msgs.msg
 def Help():
@@ -82,11 +82,11 @@ def Run(ct,*args):
           if not IsIn(g_trg[d],[gripper_range[0][d],gripper_range[1][d]]):
             g_trg[d]= min(max(g_trg[d],gripper_range[0][d]),gripper_range[1][d])
         ct.robot.MoveGripper2(g_trg,arm=arm)
-        print g_trg
+        print(g_trg)
 
       rate_adjuster.sleep()
 
-    print ''
+    print('')
 
   finally:
     kbhit.Deactivate()

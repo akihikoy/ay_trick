@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 from core_tool import *
 SmartImportReload('tsim.sm4')
 from tsim.sm4 import (
@@ -46,7 +46,7 @@ def Run(ct,*args):
 
   ct.srvp.ode_resume()
   l.config= sim.GetConfig(ct)
-  print 'Previous config:\n',l.config
+  print('Previous config:\n',l.config)
 
   #Setup config
   l.config.MaxContacts= 2
@@ -59,7 +59,7 @@ def Run(ct,*args):
   if 'config_callback' in l and l.config_callback!=None:
     l.config_callback(ct,l,sim)
   #Log('After l.config_callback')
-  print 'Config:\n',l.config
+  print('Config:\n',l.config)
 
   #Reset to get state for plan
   sim.ResetConfig(ct,l.config)

@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 #\file    cui_over_ros_node.py
 #\brief   CUI using the ROS node version of running motion script interface (TROSNode).
 #\author  Akihiko Yamaguchi, info@akihikoy.net
@@ -78,7 +78,7 @@ class TCUIOverROSNode(object):
       self.done_exit_proc= True
 
   def SaveHistory(self):
-    print 'Save history into ',self.hist_file
+    print('Save history into ',self.hist_file)
     self.write_history_file(self.hist_file)
 
   def Start(self):
@@ -90,7 +90,7 @@ class TCUIOverROSNode(object):
     while self.running and not rospy.is_shutdown():
       caret= 'trick or quit> '
       try:
-        cmd_raw= raw_input(caret).strip()
+        cmd_raw= input(caret).strip()
       except EOFError:
         self.running= False
         continue
@@ -108,13 +108,13 @@ class TCUIOverROSNode(object):
           res= self.srvp_get_result_as_yaml()
           if res.success:
             res_value= yamlload(res.result, Loader=YLoader)
-            if res_value is not None:  print res_value
+            if res_value is not None:  print(res_value)
           else:
             CPrint(4,res.message)
       except Exception as e:
         PrintException(e,' in CUI')
         c1,c2,ce= ACol.I(4,1,None)
-        print '%sCheck the command line: %s%s %s' % (c1, c2,cmd_raw, ce)
+        print('%sCheck the command line: %s%s %s' % (c1, c2,cmd_raw, ce))
 
     self.Exit('the end of TCUIOverROSNode.Interface',wait_cui=False)
 
@@ -125,7 +125,7 @@ class TCUIOverROSNode(object):
 if __name__ == '__main__':
   rospy.init_node('cui_over_ros_node{}'.format(os.getpid()))
   cui= TCUIOverROSNode()
-  print 'CUIOverROSNode:',rospy.get_name()
+  print('CUIOverROSNode:',rospy.get_name())
   cui.Start()
   rospy.spin()
   cui.Exit('__main__')

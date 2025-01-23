@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 from core_tool import *
 import std_msgs.msg
 import std_srvs.srv
@@ -17,7 +17,7 @@ def Run(ct,*args):
 
     ct.srvp.ode_resume()
     config= sim.GetConfig(ct)
-    print 'Current config:',config
+    print('Current config:',config)
 
     #Setup config
     config.BallType= 0  #Sphere particles
@@ -35,7 +35,7 @@ def Run(ct,*args):
     sim.ResetConfig(ct,config)
     time.sleep(1.0)  #Wait for reset action is done
 
-    print 'l.sensors:',l.sensors
+    print('l.sensors:',l.sensors)
 
     #Plan pour
     #...

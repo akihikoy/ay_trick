@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 from core_tool import *
 import baxter_core_msgs
 def Help():
@@ -57,18 +57,18 @@ def Run(ct,*args):
     arm= args[0] if len(args)>0 else ct.robot.Arm
     ctrl_type= args[1] if len(args)>1 else 'position'
     if 'bxtrack'+LRToStrS(arm) in ct.thread_manager.thread_list:
-      print 'bxtrack'+LRToStrS(arm),'is already on'
+      print('bxtrack'+LRToStrS(arm),'is already on')
 
-    print 'Turn on:','bxtrack'+LRToStrS(arm)
+    print('Turn on:','bxtrack'+LRToStrS(arm))
     ct.thread_manager.Add(name='bxtrack'+LRToStrS(arm), target=lambda th_info: TrackingLoop(th_info,ct,arm,ctrl_type))
 
   elif command=='off':
     arm= args[0] if len(args)>0 else ct.robot.Arm
-    print 'Turn off:','bxtrack'+LRToStrS(arm)
+    print('Turn off:','bxtrack'+LRToStrS(arm))
     ct.thread_manager.Stop(name='bxtrack'+LRToStrS(arm))
 
   elif command=='clear':
-    print 'Turn off:','bxtrack'+LRToStrS(RIGHT)
-    print 'Turn off:','bxtrack'+LRToStrS(LEFT)
+    print('Turn off:','bxtrack'+LRToStrS(RIGHT))
+    print('Turn off:','bxtrack'+LRToStrS(LEFT))
     ct.thread_manager.Stop(name='bxtrack'+LRToStrS(RIGHT))
     ct.thread_manager.Stop(name='bxtrack'+LRToStrS(LEFT))

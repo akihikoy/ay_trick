@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 from core_tool import *
 def Help():
   return '''Jacobian test.
@@ -62,7 +62,7 @@ def Run(ct,*args):
           #[ 0.       ,   0.99948119,  0.99948119,  0.99948119],
           #[ 1.       ,   0.        ,  0.        ,  0.        ]])
 
-  print 'J=',J
+  print('J=',J)
 
   W= np.diag([1.0,1.0,1.0, 0.01,0.01,0.01])
 
@@ -76,13 +76,13 @@ def Run(ct,*args):
   vx3= np.dot(J,dq3)
   vx4= np.dot(J,dq4)
 
-  print 'dq1=',ToList(dq1)
-  print 'dq2=',ToList(dq2)
-  print 'dq3=',ToList(dq3)
-  print 'dq4=',ToList(dq4)
-  print 'vx0=',ToList(vx0)
-  print 'vx1=',ToList(vx1)
-  print 'vx2=',ToList(vx2)
-  print 'vx3=',ToList(vx3)
-  print 'vx4=',ToList(vx4)
+  print('dq1=',ToList(dq1))
+  print('dq2=',ToList(dq2))
+  print('dq3=',ToList(dq3))
+  print('dq4=',ToList(dq4))
+  print('vx0=',ToList(vx0))
+  print('vx1=',ToList(vx1))
+  print('vx2=',ToList(vx2))
+  print('vx3=',ToList(vx3))
+  print('vx4=',ToList(vx4))
 

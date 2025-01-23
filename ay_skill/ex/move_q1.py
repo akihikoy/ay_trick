@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 from core_tool import *
 def Help():
   return '''Move arm to target joint angles.
@@ -12,5 +12,5 @@ def Run(ct,*args):
   dq= args[1]
   q= ct.robot.Q(arm=arm)  #Current joint angles
   q_trg= [q[d]+dq[d] for d in range(ct.robot.DoF())]  #Target
-  print 'Moving {arm}-arm to {q}'.format(arm=LRToStr(arm), q=q_trg)
+  print('Moving {arm}-arm to {q}'.format(arm=LRToStr(arm), q=q_trg))
   ct.robot.MoveToQ(q_trg, dt=4.0, arm=arm)

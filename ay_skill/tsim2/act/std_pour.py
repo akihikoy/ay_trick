@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 from core_tool import *
 SmartImportReload('sm_tools')
 from sm_tools import RunSMAsThread
@@ -213,7 +213,7 @@ def FlowCGenSM(ct,l,sim):
 
   sm.Run()
 
-  for sub_sm in l.sub_sm.values():
+  for sub_sm in list(l.sub_sm.values()):
     sub_sm.Cleanup()
   sm.Cleanup()
 

@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 from core_tool import *
 def Help():
   return '''Example of inverse kinematics.
@@ -10,4 +10,4 @@ def Run(ct,*args):
   arm= args[0]
   x_trg= args[1]
   q= ct.robot.IK(x_trg, arm=arm)
-  print 'IK solution= {q}'.format(q=q)
+  print('IK solution= {q}'.format(q=q))

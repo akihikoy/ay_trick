@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 from core_tool import *
 roslib.load_manifest('sensor_msgs')
 import sensor_msgs.msg
@@ -65,10 +65,10 @@ def Run(ct,*args):
 
   joyst= {}
   ct.AddSub('joy', 'joy', sensor_msgs.msg.Joy, lambda msg,joyst=joyst: CallbackJoy(msg, joyst))
-  print 'Constraint mode:',constraint
-  print '  Original lx=',l.options['lx']
-  print '  Current lx=',l.lx
-  print '  Press Y to reset to the original.'
+  print('Constraint mode:',constraint)
+  print('  Original lx=',l.options['lx'])
+  print('  Current lx=',l.lx)
+  print('  Press Y to reset to the original.')
 
   try:
     kbhit= TKBHit()
@@ -82,7 +82,7 @@ def Run(ct,*args):
       else:  break
       if joyst and joyst['START']:  break
       if (joyst and joyst['Y']) or key=='r':
-        print 'Reset the calibration.'
+        print('Reset the calibration.')
         l.lx= l.options['lx']
         l.lw_x_camera_link= TransformRightInv(l.lx,dx_cam)
 
@@ -135,17 +135,17 @@ def Run(ct,*args):
           is_changed= any(np.abs(steps)>0) or any(np.abs(wsteps)>0)
 
       if is_changed:
-        vx_joy= map(lambda x:speed_gain*x,steps)+map(lambda x:speed_gain*5.0*x,wsteps)
+        vx_joy= [speed_gain*x for x in steps]+[speed_gain*5.0*x for x in wsteps]
         x_diff= np.array(vx_joy)*dt
         l.lx= AddDiffX(l.lx, x_diff)
         l.lw_x_camera_link= TransformRightInv(l.lx,dx_cam)
 
       rate_adjuster.sleep()
 
-    print ''
-    print 'Calibration done.'
-    print 'Original lx=',l.options['lx']
-    print 'lx=',l.lx
+    print('')
+    print('Calibration done.')
+    print('Original lx=',l.options['lx'])
+    print('lx=',l.lx)
 
   finally:
     kbhit.Deactivate()

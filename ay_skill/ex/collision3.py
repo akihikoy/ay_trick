@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 from core_tool import *
 def Help():
   return '''State validity check in a virtual scene while moving the robot with grasping an object.
@@ -99,7 +99,7 @@ def Run(ct,*args):
       ct.robot.MoveToX(x_trg(t), 0.07)
 
       vs,res1= ct.Run('scene','isvalidq',arm,[],ct.robot.Q(arm))
-      if not vs:  print '{t}: Arm-{arm} is in contact'.format(t=t, arm=ct.robot.ArmStr(arm))
+      if not vs:  print('{t}: Arm-{arm} is in contact'.format(t=t, arm=ct.robot.ArmStr(arm)))
       viz_c.AddContacts(res1.contacts, scale=[0.05])
       #print res1.contacts
 

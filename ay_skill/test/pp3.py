@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 from core_tool import *
 def Help():
   return '''Example of pick and place from/to three locations.
@@ -28,9 +28,9 @@ def FollowXTraj(ct, x_traj, x_ext, q_seed, arm, lin_speed, lin_acc, tool_rad, jo
                 acceleration=lin_acc[0],
                 dist_criteria=['E', 'Q', 'E'])
     tx_traj= TTrajFromXTraj3(x_trajs, **kwargs1)
-    print('q_traj:',len(q_traj))
-    print('x_traj:',len(x_traj))
-    print('tx_traj:',len(tx_traj))
+    print(('q_traj:',len(q_traj)))
+    print(('x_traj:',len(x_traj)))
+    print(('tx_traj:',len(tx_traj)))
   else:
     kwargs1= dict(speed=lin_speed[0],
                 speed_ratios=[1.0/tool_rad,1.0/joint_rad],
@@ -208,7 +208,7 @@ def Run(ct,*args):
 
   if not ct.HasAttr(TMP,'CycleTime'):  ct.SetAttr(TMP,'CycleTime', [])
   ct.GetAttr(TMP,'CycleTime').append((rospy.Time.now()-t_start).to_sec())
-  print('Cycle time: {} s'.format(ct.GetAttr(TMP,'CycleTime')[-1]))
+  print(('Cycle time: {} s'.format(ct.GetAttr(TMP,'CycleTime')[-1])))
   t_start= rospy.Time.now()
 
   xf_traj22= np.array( [xf_grasp_list[1]]
@@ -237,7 +237,7 @@ def Run(ct,*args):
   if with_fv:  ct.Run('fv.hold','on',arm)
 
   ct.GetAttr(TMP,'CycleTime').append((rospy.Time.now()-t_start).to_sec())
-  print('Cycle time: {} s'.format(ct.GetAttr(TMP,'CycleTime')[-1]))
+  print(('Cycle time: {} s'.format(ct.GetAttr(TMP,'CycleTime')[-1])))
   #t_start= rospy.Time.now()
 
   xf_traj32= np.array( [xf_grasp_list[2]]

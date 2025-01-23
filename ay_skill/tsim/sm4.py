@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 from core_tool import *
 import std_msgs.msg
 import std_srvs.srv
@@ -576,7 +576,7 @@ def FlowCGenSM(ct,l,sim):
 
   sm.Run()
 
-  for sub_sm in l.sub_sm.values():
+  for sub_sm in list(l.sub_sm.values()):
     sub_sm.Cleanup()
   sm.Cleanup()
 
@@ -617,7 +617,7 @@ def PourSM(ct,l):
 
     ct.srvp.ode_resume()
     l.config= sim.GetConfig(ct)
-    print 'Current config:',l.config
+    print('Current config:',l.config)
 
     #Setup config
     l.config.MaxContacts= 2
@@ -807,9 +807,9 @@ def Run(ct,*args):
 
   res= PourSM(ct,l)
   #print 'l.filtered=\n',l.filtered
-  print 'term_flow_center=', l.filtered.term_flow_center
-  print 'term_flow_var=', l.filtered.term_flow_var
-  print 'term_flow_max_dist=', l.filtered.term_flow_max_dist
+  print('term_flow_center=', l.filtered.term_flow_center)
+  print('term_flow_var=', l.filtered.term_flow_var)
+  print('term_flow_max_dist=', l.filtered.term_flow_max_dist)
   l= None
   return res
 

@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 from core_tool import *
 import std_msgs.msg
 import std_srvs.srv
@@ -71,4 +71,4 @@ def TrackTraj(ct,l,q_traj,t_traj):
     t_prev= t_curr
 
 def Run(ct,*args):
-  print Help()
+  print(Help())

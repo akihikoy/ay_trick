@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 from core_tool import *
 def Help():
   return '''Baxter range sensor test.
@@ -11,7 +11,7 @@ def Callback(ct,msg):
   x_r= ct.robot.FK(x_ext=ct.GetAttr('left_hand_range','lx'), arm=LEFT)
   #Position of object (e.g. table) detected by the range sensor:
   x_o= Transform(x_r, [dist,0.0,0.0])
-  print x_o
+  print(x_o)
 
 def Run(ct,*args):
   #Get a local pose of range sensor on wrist frame:

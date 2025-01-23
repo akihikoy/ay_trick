@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 from core_tool import *
 def Help():
   return '''Record joint (q) and gripper (g) positions using the joystick controller.
@@ -12,7 +12,7 @@ def Help():
   '''
 
 def RecCurrent(ct, q_traj, g_traj):
-  print 'Adding the current joint and gripper positions:', ct.robot.Q(), ct.robot.GripperPos()
+  print('Adding the current joint and gripper positions:', ct.robot.Q(), ct.robot.GripperPos())
   q_traj.append(ct.robot.Q())
   g_traj.append(ct.robot.GripperPos())
 
@@ -22,18 +22,18 @@ def Run(ct,*args):
   g_traj= []
   #RecCurrent(ct, q_traj, g_traj)  #Record the initial positions.
   while not rospy.is_shutdown():
-    print '---'
-    print 'The joystick controller j is activated.'
-    print 'Move the robot and the gripper with the joystick to positions to be recorded.'
-    print 'Continue?'
+    print('---')
+    print('The joystick controller j is activated.')
+    print('Move the robot and the gripper with the joystick to positions to be recorded.')
+    print('Continue?')
     if not KBHAskYesNo():  break
     ct.Run('j')
     RecCurrent(ct, q_traj, g_traj)
 
-  print 'Finished.'
-  print '---'
+  print('Finished.')
+  print('---')
   record= dict(q_traj=q_traj, g_traj=g_traj)
-  print DumpYAML(record)
+  print(DumpYAML(record))
   if filename is not None:
     SaveYAML(record, filename)
     CPrint(1,'The record is saved into: {}'.format(filename))

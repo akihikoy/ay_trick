@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 from core_tool import *
 def Help():
   return '''Slip-based picking up version 2.
@@ -137,7 +137,7 @@ def PickupLoop(th_info, ct, arm, options):
       l.log['slip'].append([tm,get_slip1()])
       l.log['slip_nml'].append([tm,get_slip1_nml()])
       l.log['center'].append([tm,get_center_avr()])
-      l.log['f'].append([tm,map(float,fv_data.force[0][:3])+map(float,fv_data.force[1][:3])])
+      l.log['f'].append([tm,list(map(float,fv_data.force[0][:3]))+list(map(float,fv_data.force[1][:3]))])
       l.log['g_pos'].append([tm,ct.robot.GripperPos(arm)])
       l.log['z_trg'].append([tm,float(ZTrgErr()[0])])
       l.log['x'].append([tm,ToList(ct.robot.FK(arm=arm))])
@@ -291,22 +291,22 @@ def Run(ct,*args):
     if 'log' in user_options:  options['log']= user_options['log']
 
     if 'vs_pickup2'+LRToStrS(arm) in ct.thread_manager.thread_list:
-      print 'vs_pickup2'+LRToStrS(arm),'is already on'
+      print('vs_pickup2'+LRToStrS(arm),'is already on')
 
     if not all(ct.Run('fv.fv','is_active',arm)):
       ct.Run('fv.fv','on',arm)
 
-    print 'Turn on:','vs_pickup2'+LRToStrS(arm)
+    print('Turn on:','vs_pickup2'+LRToStrS(arm))
     ct.thread_manager.Add(name='vs_pickup2'+LRToStrS(arm), target=lambda th_info: PickupLoop(th_info,ct,arm,options))
 
   elif command=='off':
     arm= args[0] if len(args)>0 else ct.robot.Arm
-    print 'Turn off:','vs_pickup2'+LRToStrS(arm)
+    print('Turn off:','vs_pickup2'+LRToStrS(arm))
     ct.thread_manager.Stop(name='vs_pickup2'+LRToStrS(arm))
 
   elif command=='clear':
-    print 'Turn off:','vs_pickup2'+LRToStrS(RIGHT)
-    print 'Turn off:','vs_pickup2'+LRToStrS(LEFT)
+    print('Turn off:','vs_pickup2'+LRToStrS(RIGHT))
+    print('Turn off:','vs_pickup2'+LRToStrS(LEFT))
     ct.thread_manager.Stop(name='vs_pickup2'+LRToStrS(RIGHT))
     ct.thread_manager.Stop(name='vs_pickup2'+LRToStrS(LEFT))
 

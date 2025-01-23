@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 from core_tool import *
 def Help():
   return '''Template of script.
@@ -8,10 +8,10 @@ def Run(ct,*args):
     if ct.robot.EndEff(i).Is('Robotiq'):
       CPrint(1,'Initializing Robotiq gripper of {arm}-arm...'.format(arm=ct.robot.ArmStr(i)))
       if ct.robot.EndEff(i).Init():
-        print 'OK'
+        print('OK')
         rospy.sleep(2.0)
-        print 'Opening gripper...'
+        print('Opening gripper...')
         ct.robot.EndEff(i).Open(blocking=True)
-        print 'Done.'
+        print('Done.')
       else:
-        print 'Failed'
+        print('Failed')

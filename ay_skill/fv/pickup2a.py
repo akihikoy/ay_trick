@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 from core_tool import *
 def Help():
   return '''Slip-based picking up version 2a.
@@ -136,7 +136,7 @@ def PickupLoop(th_info, ct, arm, options):
 
   def IsDropped():
     #sum --> max for robustness.
-    print 'area:',max(fv_data.obj_area_filtered),max(l.obj_area0),max(fv_data.obj_area_filtered)/max(max(l.obj_area0),1.0e-6)
+    print('area:',max(fv_data.obj_area_filtered),max(l.obj_area0),max(fv_data.obj_area_filtered)/max(max(l.obj_area0),1.0e-6))
     if max(fv_data.obj_area_filtered) < options['area_drop_ratio']*max(l.obj_area0):  return True
     return False
 
@@ -208,7 +208,7 @@ def PickupLoop(th_info, ct, arm, options):
       l.log['slip'].append([tm,get_slip1()])
       l.log['slip_nml'].append([tm,get_slip1_nml()])
       l.log['center'].append([tm,get_center_avr()])
-      l.log['f'].append([tm,map(float,fv_data.force[0][:3])+map(float,fv_data.force[1][:3])])
+      l.log['f'].append([tm,list(map(float,fv_data.force[0][:3]))+list(map(float,fv_data.force[1][:3]))])
       l.log['g_pos'].append([tm,ct.robot.GripperPos(arm)])
       l.log['z_trg'].append([tm,float(ZTrgErr()[0])])
       l.log['x'].append([tm,ToList(ct.robot.FK(arm=arm))])
@@ -232,7 +232,7 @@ def PickupLoop(th_info, ct, arm, options):
       2. Timeout count (==l.g_motion) has passed.
     '''
     if l.g_motion>0:
-      print rospy.Time.now().to_sec(), abs(ct.robot.GripperPos(arm)-l.g_pos), abs(ct.robot.GripperPos(arm)-l.g_pos)<0.0005
+      print(rospy.Time.now().to_sec(), abs(ct.robot.GripperPos(arm)-l.g_pos), abs(ct.robot.GripperPos(arm)-l.g_pos)<0.0005)
       #if abs(ct.robot.GripperPos(arm)-l.g_pos)<0.0005:  l.g_motion= 0
       get_value= lambda lst,idx: lst[idx] if isinstance(lst,list) else lst
       if abs(ct.robot.GripperPos(arm)-l.g_pos)<0.5*get_value(ct.GetAttr('fv_ctrl','min_gstep'),arm):  l.g_motion= 0
@@ -434,7 +434,7 @@ def Run(ct,*args):
     if 'log' in user_options:  options['log']= user_options['log']
 
     if 'vs_pickup2a'+LRToStrS(arm) in ct.thread_manager.thread_list:
-      print 'vs_pickup2a'+LRToStrS(arm),'is already on'
+      print('vs_pickup2a'+LRToStrS(arm),'is already on')
 
     if not all(ct.Run('fv.fv','is_active',arm)):
       ct.Run('fv.fv','on',arm)

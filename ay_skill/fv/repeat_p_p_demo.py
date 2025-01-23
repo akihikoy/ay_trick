@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 from core_tool import *
 def Help():
   return '''Repeating pick and place demo.
@@ -91,7 +91,7 @@ def Run(ct,*args):
   if command=='on':
     arm= args[0] if len(args)>0 else ct.robot.Arm
     if 'repeat_p_p_demo'+LRToStrS(arm) in ct.thread_manager.thread_list:
-      print 'repeat_p_p_demo'+LRToStrS(arm),'is already on'
+      print('repeat_p_p_demo'+LRToStrS(arm),'is already on')
 
     if not all(ct.Run('fv.fv','is_active',arm)):
       ct.Run('fv.fv','on',arm)

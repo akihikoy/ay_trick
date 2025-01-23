@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 from core_tool import *
 import std_srvs.srv
 roslib.load_manifest('fingervision_msgs')
@@ -173,12 +173,12 @@ def Run(ct,*args):
       elif node_names is None:  node_names= a
       else:  raise Exception('Too many arguments.')
     arms= set(arms)
-    print '''Setup FV:
+    print('''Setup FV:
     arms: {}
     fv_names: {}
     node_names: {}
     no_wrench: {}
-    no_objinfo: {}'''.format(arms,fv_names,node_names,no_wrench,no_objinfo)
+    no_objinfo: {}'''.format(arms,fv_names,node_names,no_wrench,no_objinfo))
 
     for arm in arms:
       arm_S= ct.robot.ArmStrS(arm)
@@ -214,10 +214,10 @@ def Run(ct,*args):
 
       if fv_names is None or arm_S not in fv_names or fv_names[arm_S] is None:
         table= RobotToFV(ct.robot, arm)
-        print 'Found info for: {robot}=Arm-{arm}'.format(robot=ct.robot.Name,arm=ct.robot.ArmStr(arm))
+        print('Found info for: {robot}=Arm-{arm}'.format(robot=ct.robot.Name,arm=ct.robot.ArmStr(arm)))
       else:
         table= GetFVSrvDict(fv_names[arm_S],node_names[arm_S] if node_names is not None and arm_S in node_names else None)
-        print 'Configured info with:',fv_names[arm_S],node_names[arm_S] if node_names is not None and arm_S in node_names else None
+        print('Configured info with:',fv_names[arm_S],node_names[arm_S] if node_names is not None and arm_S in node_names else None)
       ct.SetAttr(TMP,'fvconf'+arm_S, table)
       armstr= ct.robot.ArmStr(arm)+'_'
       if table['srv_separated']:
@@ -249,7 +249,7 @@ def Run(ct,*args):
     arms= read_arms(args)
     for arm in arms:
       arm_S= ct.robot.ArmStrS(arm)
-      print 'Stopping','fv'+arm_S
+      print('Stopping','fv'+arm_S)
       if ct.HasAttr(TMP,'fv'+arm_S):
         ct.GetAttr(TMP,'fv'+arm_S).running= False
       if 'fv_wrench' in ct.callback:  ct.callback.fv_wrench[arm_S]= [None,None]

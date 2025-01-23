@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 from core_tool import *
 def Help():
   return '''Visualizing force change.
@@ -42,7 +42,7 @@ def VizLoop(th_info, ct, arm):
                 for p_f0,p_f_f in zip(pfa0[side],pfa_filtered[side]) if p_f_f is not None]
       gpos= (-1.0,1.0)[side]*ct.robot.GripperPos(arm)
       force_array+= [p_f[2:] + np.cross([p_f[0],gpos,p_f[1]],p_f[2:]).tolist() for p_f in diff_pfa]
-    f_diff= [sum([force[d] for force in force_array])/float(len(force_array)) for d in xrange(6)]
+    f_diff= [sum([force[d] for force in force_array])/float(len(force_array)) for d in range(6)]
     return Vec(f_diff)
 
   #f0= Vec(fv_data.force[0]) + Vec(fv_data.force[1])
@@ -68,7 +68,7 @@ def Run(ct,*args):
     arm= args[0] if len(args)>0 else ct.robot.Arm
     ctrl_type= args[1] if len(args)>1 else 'position'
     if 'vs_vizdiff'+LRToStrS(arm) in ct.thread_manager.thread_list:
-      print 'vs_vizdiff'+LRToStrS(arm),'is already on'
+      print('vs_vizdiff'+LRToStrS(arm),'is already on')
 
     if not all(ct.Run('fv.fv','is_active',arm)):
       ct.Run('fv.fv','on',arm)

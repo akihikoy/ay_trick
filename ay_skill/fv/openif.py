@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 from core_tool import *
 def Help():
   return '''Opening gripper if an external force is applied.
@@ -59,7 +59,7 @@ def OpeningLoop(th_info, ct, arm, user_options):
 
   while th_info.IsRunning() and not rospy.is_shutdown():
     if n_change(0)+n_change(1)>options['nforce_threshold']:
-      print 'Force is applied,',n_change(0)+n_change(1)
+      print('Force is applied,',n_change(0)+n_change(1))
       options['log']['opened']= True
       options['log']['detected']= 'force'
       options['log']['fv_data_at_detection']= copy.deepcopy(fv_data)
@@ -68,7 +68,7 @@ def OpeningLoop(th_info, ct, arm, user_options):
       break
     #elif sum(fv_data.mv_s[0])+sum(fv_data.mv_s[1])>options['slip_threshold']:
     elif any(slip_detect2()):
-      print 'Slip is detected',slip_detect2()
+      print('Slip is detected',slip_detect2())
       options['log']['opened']= True
       options['log']['detected']= 'slip'
       options['log']['fv_data_at_detection']= copy.deepcopy(fv_data)
@@ -92,7 +92,7 @@ def Run(ct,*args):
     user_options= args[1] if len(args)>1 else {}
 
     if 'vs_openif'+LRToStrS(arm) in ct.thread_manager.thread_list:
-      print 'vs_openif'+LRToStrS(arm),'is already on'
+      print('vs_openif'+LRToStrS(arm),'is already on')
 
     if not all(ct.Run('fv.fv','is_active',arm)):
       ct.Run('fv.fv','on',arm)

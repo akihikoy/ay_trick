@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 from core_tool import *
 def Help():
   return '''Test of sequence of motions with linear trajectory in Cartesian.
@@ -187,11 +187,11 @@ def Run(ct,*args):
     rospy.sleep(ctrl_sleep)
 
     ct.GetAttr(TMP,'CycleTime').append((rospy.Time.now()-t_start).to_sec())
-    print('Cycle time: {} s'.format(ct.GetAttr(TMP,'CycleTime')[-1]))
+    print(('Cycle time: {} s'.format(ct.GetAttr(TMP,'CycleTime')[-1])))
     t_start= rospy.Time.now()
 
-  print('Average cycle time: {} s'.format(np.mean(ct.GetAttr(TMP,'CycleTime'))))
-  print('        stdev: {} s'.format(np.std(ct.GetAttr(TMP,'CycleTime'))))
+  print(('Average cycle time: {} s'.format(np.mean(ct.GetAttr(TMP,'CycleTime')))))
+  print(('        stdev: {} s'.format(np.std(ct.GetAttr(TMP,'CycleTime')))))
 
   #Move to the initial pose:
   q_diff= np.max(np.abs(np.array(q_init)-ct.robot.Q(arm=arm)))
