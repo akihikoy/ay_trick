@@ -28,8 +28,9 @@ def Help():
 
 def DefaultOptions():
   return {
+    'rs_name': 'camera',  #RealSense camera name in ROS.
     'types': ['depth','rgb'],  #List of subscribing components ('depth','rgb')
-    'lx': [0.35, 0.05, 0.70]+list(MultiplyQ(QFromAxisAngle([0,0,1],0.5*math.pi),[0,1,0,0])),  #Pose of the camera (camera_color_optical_frame) in the robot frame.
+    'lx': [0.35, 0.05, 0.70]+list(MultiplyQ(QFromAxisAngle([0,0,1],0.5*math.pi),[0,1,0,0])),  #Pose of the camera ({rs_name}_color_optical_frame) in the robot frame.
     'rs_attr': 'rs',  #Captured data is saved into: ct.GetAttr(TMP,rs_attr)
     }
 
@@ -47,7 +48,7 @@ def ReceiveDepth(ct,l,lh,msg):
   with lh.thread_locker:
     l.xw= [0.,0.,0., 0.,0.,0.,1.0]
   ct.sbr.sendTransform2(l.lw_x_camera_link[0:3],l.lw_x_camera_link[3:],
-      rospy.Time.now(), 'camera_link', l.frame)
+      rospy.Time.now(), f'{l.rs_name}_link', l.frame)
   if ct.callback.rs is not None:
     ct.callback.rs('depth',l,lh)
 
@@ -63,7 +64,7 @@ def ReceiveRGB(ct,l,lh,msg):
   with lh.thread_locker:
     l.xw= [0.,0.,0., 0.,0.,0.,1.0]
   ct.sbr.sendTransform2(l.lw_x_camera_link[0:3],l.lw_x_camera_link[3:],
-      rospy.Time.now(), 'camera_link', l.frame)
+      rospy.Time.now(), f'{l.rs_name}_link', l.frame)
   if ct.callback.rs is not None:
     ct.callback.rs('rgb',l,lh)
 
@@ -89,27 +90,28 @@ def Run(ct,*args):
     ct.SetAttr(TMP,options['rs_attr'], l)
     ct.SetAttr(TMP,'{rs_attr}_helper'.format(rs_attr=options['rs_attr']), lh)
     l.options= options
-    l.proj_mat= GetCameraProjectionMatrix()
+    l.rs_name= options['rs_name']
+    l.proj_mat= GetCameraProjectionMatrix(cam_info_topic=f"/{l.rs_name}/aligned_depth_to_color/camera_info")
     ct.callback.rs= None
     l.frame= ct.robot.BaseFrame
     l.lx= options['lx']
-    l.lw_x_camera_link= TransformRightInv(l.lx,ct.Run('tf_once','camera_link','camera_color_optical_frame'))
+    l.lw_x_camera_link= TransformRightInv(l.lx,ct.Run('tf_once',f'{l.rs_name}_link',f'{l.rs_name}_color_optical_frame'))
     l.xw= None  #Wrist pose at the observation. If both depth and rgb are observed, xw is measured only when depth is observed.
 
     if 'depth' in options['types']:
       if not no_wait:
         ct.AddSubW('{rs_attr}_depth'.format(rs_attr=options['rs_attr']),
-                  '/camera/aligned_depth_to_color/image_raw', sensor_msgs.msg.Image, lambda msg,ct=ct,l=l,lh=lh:ReceiveDepth(ct,l,lh,msg), time_out=3.0)
+                  f"/{l.rs_name}/aligned_depth_to_color/image_raw", sensor_msgs.msg.Image, lambda msg,ct=ct,l=l,lh=lh:ReceiveDepth(ct,l,lh,msg), time_out=3.0)
       else:
         ct.AddSub('{rs_attr}_depth'.format(rs_attr=options['rs_attr']),
-                  '/camera/aligned_depth_to_color/image_raw', sensor_msgs.msg.Image, lambda msg,ct=ct,l=l,lh=lh:ReceiveDepth(ct,l,lh,msg))
+                  f"/{l.rs_name}/aligned_depth_to_color/image_raw", sensor_msgs.msg.Image, lambda msg,ct=ct,l=l,lh=lh:ReceiveDepth(ct,l,lh,msg))
     if 'rgb' in options['types']:
       if not no_wait:
         ct.AddSubW('{rs_attr}_rgb'.format(rs_attr=options['rs_attr']),
-                  '/camera/color/image_raw', sensor_msgs.msg.Image, lambda msg,ct=ct,l=l,lh=lh:ReceiveRGB(ct,l,lh,msg), time_out=3.0)
+                  f"/{l.rs_name}/color/image_raw", sensor_msgs.msg.Image, lambda msg,ct=ct,l=l,lh=lh:ReceiveRGB(ct,l,lh,msg), time_out=3.0)
       else:
         ct.AddSub('{rs_attr}_rgb'.format(rs_attr=options['rs_attr']),
-                  '/camera/color/image_raw', sensor_msgs.msg.Image, lambda msg,ct=ct,l=l,lh=lh:ReceiveRGB(ct,l,lh,msg))
+                  f"/{l.rs_name}/color/image_raw", sensor_msgs.msg.Image, lambda msg,ct=ct,l=l,lh=lh:ReceiveRGB(ct,l,lh,msg))
 
   elif command in ('off','clear'):
     rs_attr= args[0] if len(args)>0 else 'rs'

@@ -5,7 +5,7 @@ import sensor_msgs.msg
 
 def Help():
   return '''RealSense2 camera pose calibration tool with joystick operation for wrist_rs2 and robot_rs2.
-  Usage:  rs2_joycalib [RS_ATTR [, CONSTRAINT]]
+  Usage:  rs2_joycalib [RS_ATTR [, CONSTRAINT [, RS_NAME]]]
     RS_ATTR: Attribute name to access the data; default:'rs' (ct.GetAttr(TMP,RS_ATTR)).
     CONSTRAINT: Type of pose-displacement constraint (default: 'xyz').
       'none':    No constraint.
@@ -16,6 +16,7 @@ def Help():
       'rpy':     RPY rotation only.
       'xy_yaw':  XY movement and Yaw rotation only.
       'xyz_yaw': XYZ movement and Yaw rotation only.
+    RS_NAME: RealSense camera name in ROS; default: 'camera'.
   '''
 
 def CallbackJoy(data, joyst):
@@ -55,12 +56,13 @@ def CallbackJoy(data, joyst):
 def Run(ct,*args):
   rs_attr= args[0] if len(args)>0 else 'rs'
   constraint= args[1] if len(args)>1 else 'xyz'
+  rs_name= args[2] if len(args)>2 else 'camera'
 
   speed_gain= 0.04
   rate= 50.
 
   dt= 1./rate
-  dx_cam= ct.Run('tf_once','camera_link','camera_color_optical_frame')
+  dx_cam= ct.Run('tf_once',f'{rs_name}_link',f'{rs_name}_color_optical_frame')
   l= ct.GetAttr(TMP,rs_attr)
 
   joyst= {}

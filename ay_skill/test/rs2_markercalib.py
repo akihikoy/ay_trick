@@ -10,7 +10,9 @@ os.environ['NO_AT_BRIDGE'] = '1'
 
 def Help():
   return '''RealSense2 camera pose calibration tool with ArUco markers.
-  Usage:  rs2_markercalib ...
+  Usage:  test.rs2_markercalib [RS_NAME [, FMT]]
+    RS_NAME: RealSense camera name in ROS.
+    FMT: Image encoding format.
 
   Note: Test with ROSbag
   '''
@@ -95,7 +97,7 @@ def OptimizeRSPoseWithFixedQ(ct, sample_list, q_fixed):
   return x_rs
 
 
-def ImageCallback(ct, msg, fmt):
+def ImageCallback(ct, msg, fmt, rs_name):
   img= CvBridge().imgmsg_to_cv2(msg, fmt)
   if fmt=='16UC1':
     img_viz= cv2.cvtColor((img).astype('uint8'), cv2.COLOR_GRAY2BGR)
@@ -112,7 +114,7 @@ def ImageCallback(ct, msg, fmt):
   if ids is not None and len(ids)>0:
     #print 'corners:', corners
     P,K,D,R= ct.GetAttr(TMP,'cam_info')
-    retval, rvec, tvec= cv2.aruco.estimatePoseBoard(corners, ids, ct.GetAttr(TMP,'aruco','board'), P, D)
+    retval, rvec, tvec= cv2.aruco.estimatePoseBoard(corners, ids, ct.GetAttr(TMP,'aruco','board'), P, D, None, None)
     #print 'retval=', retval
     #print 'rvec=', rvec
     #print 'tvec=', tvec
@@ -165,16 +167,27 @@ def ImageCallback(ct, msg, fmt):
 
   if ct.GetAttr(TMP,'rs_print_req'):
     ct.SetAttr(TMP,'rs_print_req', False)
-    x_cam= TfOnce(ct.robot.BaseFrame, 'camera_color_optical_frame')
+    x_cam= TfOnce(ct.robot.BaseFrame, f'{rs_name}_color_optical_frame')
     print('x_marker_robot=',x_marker_robot)
     print('x_marker_rs=',Transform(x_cam, x_marker_rs))
 
 
 def Run(ct,*args):
-  topic= args[0] if len(args)>0 else '/camera/color/image_raw'
+  rs_name= args[0] if len(args)>0 else '/camera'
   fmt= args[1] if len(args)>1 else None
+
+  topic= f'/{rs_name}/color/image_raw'
+  cam_info_topic= f'/{rs_name}/color/camera_info'
   if fmt is None:
     fmt= GetImageEncoding(topic, convert_cv=True)
+  print(f'''rs2_markercalib information:
+    RealSense name: {rs_name}
+    RGB image topic: {topic}
+    Camera info topic: {cam_info_topic}
+    Image encoding: {fmt}''')
+
+  if topic is None or cam_info_topic is None:
+    raise Exception(f'topic or cam_info_topic is empty.')
 
   '''
   #rvec,tvec= [1.67829955, 1.65574508, 0.96456194], [-0.1,-0.068,0.955]
@@ -213,8 +226,7 @@ def Run(ct,*args):
   ct.SetAttr(TMP,'aruco','parameters', parameters)
   ct.SetAttr(TMP,'aruco','board', board)
 
-  GetCameraInfo()
-  P,K,D,R= GetCameraInfo()
+  P,K,D,R= GetCameraInfo(cam_info_topic=cam_info_topic)
   P= P[:3,:3]
   ct.SetAttr(TMP,'cam_info', (P,K,D,R))
 
@@ -222,7 +234,7 @@ def Run(ct,*args):
   ct.SetAttr(TMP,'rs_optimization_req', False)
   ct.SetAttr(TMP,'rs_print_req', False)
 
-  if ct.HasAttr(TMP,'rs_sample_list'):
+  if ct.HasAttr(TMP,'rs_sample_list') and len(ct.GetAttr(TMP,'rs_sample_list'))>0:
     print('Previous calibration data found. Do you want to continue from that?')
     print('  # of samples:',len(ct.GetAttr(TMP,'rs_sample_list')))
     if AskYesNo():
@@ -233,7 +245,7 @@ def Run(ct,*args):
   else:
     ct.SetAttr(TMP,'rs_sample_list', [])
 
-  frame= 'camera_color_optical_frame'
+  frame= f'{rs_name}_color_optical_frame'
   ct.viz.rs2_markercalib_rs= TSimpleVisualizerArray(rospy.Duration(), name_space='viz_rs2_markercalib_rs', frame=frame)
   ct.viz.rs2_markercalib_robot= TSimpleVisualizerArray(rospy.Duration(), name_space='viz_rs2_markercalib_robot', frame=ct.robot.BaseFrame)
   for viz in (ct.viz.rs2_markercalib_rs, ct.viz.rs2_markercalib_robot):
@@ -241,7 +253,7 @@ def Run(ct,*args):
     viz.Reset()
 
   ct.SetAttr(TMP,'rs_image', None)
-  ct.AddSub('rs_image', topic, sensor_msgs.msg.Image, lambda msg:ImageCallback(ct,msg,fmt))
+  ct.AddSub('rs_image', topic, sensor_msgs.msg.Image, lambda msg:ImageCallback(ct,msg,fmt,rs_name))
 
   try:
     print('''Keyboard operation:
