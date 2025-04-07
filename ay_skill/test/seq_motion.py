@@ -17,7 +17,7 @@ def PrintRobotState(robot, text=''):
   st= ACTC_STATE_TO_STR[robot.actc.traj.get_state()]
   actc_res= robot.actc.traj.get_result()
   actc_res= ACTC_RESULT_TO_STR[actc_res.error_code] if actc_res is not None else 'None'
-  if robot.Is('Motoman'):
+  if robot.Is('Motoman') and not robot.Is('sim'):
     print('{}: e_stopped={} drives_powered={} motion_possible={} in_error={} actc_st={}, actc_res:{}'.format(
       text,
       robot.robot_status.e_stopped.val==industrial_msgs.msg.TriState.FALSE,
@@ -27,7 +27,7 @@ def PrintRobotState(robot, text=''):
       st,
       actc_res,
       ))
-  elif robot.Is('UR'):
+  if robot.Is('UR') and not robot.Is('sim'):
     print('{}: is_normal: {}, robot_mode: {}, safety_mode: {}, robot_program_running: {}, actc_st: {}, actc_res:{}'.format(
       text,
       robot.IsNormal(),
@@ -89,7 +89,10 @@ def Run(ct,*args):
       for i in range(n_repeat):
         q_traj[0]= ct.robot.Q(arm=arm)
         PrintRobotState(ct.robot, 'p10')
-        ct.robot.FollowQTraj(q_traj, t_traj, arm=arm, blocking=blocking_mode)
+        #TEST to provide dq_traj.
+        dq_traj= QTrajToDQTraj(q_traj, t_traj)
+        print(f'TEST: dq_traj={dq_traj}')
+        ct.robot.FollowQTraj(q_traj, t_traj, arm=arm, blocking=blocking_mode, dq_traj=dq_traj)
         PrintRobotState(ct.robot, 'p20')
         q_traj_rev[0]= ct.robot.Q(arm=arm)
         PrintRobotState(ct.robot, 'p21')
