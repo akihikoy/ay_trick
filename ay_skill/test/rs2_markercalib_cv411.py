@@ -175,7 +175,7 @@ def ImageCallback(ct, msg, fmt, rs_name):
         ex,ey,ez= RotToExyz(rot)
         tvec= (np.array(tvec) - (marker_length*markers_y+marker_separation*(markers_y-1))*np.array(ey))
         x_marker_rs= list(tvec) + list(RotToQ(rot))
-        print(f'tvec={tvec}, rvec={rvec}')
+        #print(f'tvec={tvec}, rvec={rvec}')
         
         frame= cv2.aruco.drawDetectedMarkers(frame, corners, ids)
         frame= cv2.drawFrameAxes(frame, P, D, rvec, tvec, 0.05)
