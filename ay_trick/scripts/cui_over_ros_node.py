@@ -62,7 +62,8 @@ class TCUIOverROSNode(object):
     self.srvp_get_result_as_yaml= rospy.ServiceProxy('/ros_node/get_result_as_yaml', ay_trick_msgs.srv.GetString, persistent=False)
     self.srvp_get_attr_as_yaml= rospy.ServiceProxy('/ros_node/get_attr_as_yaml', ay_trick_msgs.srv.GetAttrAsString, persistent=False)
     self.srvp_set_attr_with_yaml= rospy.ServiceProxy('/ros_node/set_attr_with_yaml', ay_trick_msgs.srv.SetAttrWithString, persistent=False)
-    self.pub_cmd= rospy.Publisher('/ros_node/command', std_msgs.msg.String, queue_size=10)
+    self.srvp_cmd= rospy.ServiceProxy('/ros_node/command', ay_trick_msgs.srv.SetString, persistent=False)
+    #self.pub_cmd= rospy.Publisher('/ros_node/command', std_msgs.msg.String, queue_size=10)
     self.pub_key= rospy.Publisher('/ros_node/stdin', std_msgs.msg.String, queue_size=10)
     self.sub_stdout= rospy.Subscriber('/ros_node/stdout', std_msgs.msg.String, self.StdOutCallback)
 
@@ -103,7 +104,8 @@ class TCUIOverROSNode(object):
           continue
         else:
           with TKBHitToTopic(self.pub_key):
-            self.pub_cmd.publish(std_msgs.msg.String(cmd_raw))
+            #self.pub_cmd.publish(std_msgs.msg.String(cmd_raw))
+            self.srvp_cmd(cmd_raw)
             self.srvp_wait_finish()
           res= self.srvp_get_result_as_yaml()
           if res.success:

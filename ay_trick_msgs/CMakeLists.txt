@@ -23,6 +23,7 @@ add_service_files(
   GetAttrAsString.srv
   GetString.srv
   SetAttrWithString.srv
+  SetString.srv
 )
 
 ## Generate actions in the 'action' folder

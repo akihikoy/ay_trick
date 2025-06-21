@@ -6,7 +6,8 @@
 #\date    Apr.16, 2021
 import sys
 import time
-import roslib;
+import threading
+import roslib
 roslib.load_manifest('ay_trick')
 roslib.load_manifest('ay_trick_msgs')
 roslib.load_manifest('ay_py')
@@ -121,6 +122,9 @@ class TROSNode(object):
     ct= TCoreTool()
     SetCT(ct)
     self._running= False
+    self._command_req= None
+    self._command_running= None
+    self._command_event= threading.Event()
     self._result= None
     self._success= False
     self._message= ''
@@ -130,6 +134,7 @@ class TROSNode(object):
       if ct.Exists('_default'):
         print('Running _default...')
         self._running= True
+        self._command_running= '_default'
         ct.Run('_default')
         print('Waiting thread _default...')
         ct.thread_manager.Join('_default')
@@ -139,10 +144,12 @@ class TROSNode(object):
       PrintException(e,' in ROSNode')
     finally:
       self._running= False
+      self._command_running= None
 
     self.key_buffer= []
     self.pub_node_status= rospy.Publisher('~node_status', ay_trick_msgs.msg.ROSNodeMode, queue_size=10)
     self.pub_stdout= rospy.Publisher('~stdout', std_msgs.msg.String, queue_size=100)
+    self.srv_cmd= rospy.Service('~command', ay_trick_msgs.srv.SetString, self.SetCommand)
     self.srv_wait_finish= rospy.Service('~wait_finish', std_srvs.srv.Empty, self.WaitFinish)
     self.srv_get_result_as_yaml= rospy.Service('~get_result_as_yaml', ay_trick_msgs.srv.GetString, self.GetResultAsYAML)
     self.srv_get_attr_as_yaml= rospy.Service('~get_attr_as_yaml', ay_trick_msgs.srv.GetAttrAsString, self.GetAttrAsYAML)
@@ -158,6 +165,7 @@ class TROSNode(object):
       if ct.Exists('_exit'):
         print('Running _exit...')
         self._running= True
+        self._command_running= '_exit'
         ct.Run('_exit')
       else:
         print('(info: script _exit does not exist)')
@@ -165,6 +173,7 @@ class TROSNode(object):
       PrintException(e,' in ROSNode')
     finally:
       self._running= False
+      self._command_running= None
       print('TCoreTool.Cleanup...')
       ct.Cleanup()
       ct= None
@@ -177,29 +186,45 @@ class TROSNode(object):
       self._result= None
       self._success= False
       self._message= ''
-      CPrint(2,'+++Start running:',cmd)
       self._running= True
+      self._command_running= cmd
+      CPrint(2,'+++Start running:',self._command_running)
       self.key_buffer= []  #Clear key buffer.
       with TStdOutToTopic(self.pub_stdout), TStdInFromBuffer(self.key_buffer):
-        res= ParseAndRun(ct, cmd)
+        res= ParseAndRun(ct, self._command_running)
       self._result= res
       self._success= True
       self._message= ''
       if res!=None:  print('Result:',res)
-      CPrint(2,'+++Finished running:',cmd)
+      CPrint(2,'+++Finished running:',self._command_running)
     except Exception as e:
       self._success= False
       self._message= repr(e)
       PrintException(e,' in ROSNode')
     finally:
       self._running= False
+      self._command_running= None
       self._mode.mode= ay_trick_msgs.msg.ROSNodeMode.READY
 
   def CommandCallback(self, msg):
-    self.RunCommand(msg.data)
+    #self.RunCommand(msg.data)
+    self.SetCommand(msg.data)
 
   def StdInCallback(self, msg):
     self.key_buffer.append(msg.data)
+
+  def SetCommand(self, req):
+    if not isinstance(req, str):
+      req= req.data
+    if self._command_req is not None:
+      CPrint(4,'Error: ros_node has a command request.')
+      CPrint(4,f'  Info: command_req: {self._command_req}')
+      CPrint(4,f'  Info: command_running: {self._command_running}')
+      CPrint(4,f'  Info: requested command: {req}')
+      return ay_trick_msgs.srv.SetStringResponse(False)
+    self._command_req= req
+    self._command_event.set()
+    return ay_trick_msgs.srv.SetStringResponse(True)
 
   def WaitFinish(self, req=None):
     global ct
@@ -249,12 +274,29 @@ class TROSNode(object):
       PrintException(e,' in ROSNode')
     return res
 
+  def MainLoop(self):
+    while not rospy.is_shutdown():
+      event_triggered= self._command_event.wait(timeout=1.0)
+      if event_triggered:
+        self._command_event.clear()
+        if self._command_req is not None:
+          cmd_req= self._command_req
+          self._command_req= None
+          self.RunCommand(cmd_req)
+
+  def StateLoop(self, th_info):
+    rate= rospy.Rate(20)
+    while th_info.IsRunning() and not rospy.is_shutdown():
+      self.pub_node_status.publish(self._mode)
+      rate.sleep()
+
 if __name__=='__main__':
   rospy.init_node('ros_node')
   rospy.sleep(0.1)
   ros_node= TROSNode()
   #rospy.spin()
-  rate= rospy.Rate(20)
-  while not rospy.is_shutdown():
-    ros_node.pub_node_status.publish(ros_node._mode)
-    rate.sleep()
+  try:
+    ct.thread_manager.Add(name='state_loop', target=ros_node.StateLoop)
+    ros_node.MainLoop()
+  finally:
+    ct.thread_manager.Stop(name='state_loop')
