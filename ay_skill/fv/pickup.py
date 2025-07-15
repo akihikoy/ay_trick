@@ -28,7 +28,7 @@ def PickupLoop(th_info, ct, arm):
       ##ct.robot.MoveGripper(pos=g_pos, arm=arm, speed=100.0, blocking=False)
       ##rospy.sleep(0.001)
       ##g_pos= ct.robot.GripperPos(arm)
-      #ct.robot.MoveGripper(pos=g_pos, arm=arm, max_effort=ct.GetAttr('fv_ctrl','effort')[arm], speed=1.0, blocking=False)
+      #ct.robot.MoveGripper(pos=g_pos, arm=arm, max_effort=ct.GetAttr('fv_ctrl','effort')[arm], speed=100.0, blocking=False)
       #for i in range(100):
         #if abs(ct.robot.GripperPos(arm)-g_pos)<0.0002:  break
         #rospy.sleep(0.0001)
@@ -57,7 +57,7 @@ def PickupLoop(th_info, ct, arm):
           #ct.robot.MoveGripper(pos=g_pos, arm=arm, speed=100.0, blocking=False)
           #rospy.sleep(0.001)
           #g_pos= ct.robot.GripperPos(arm)
-          ct.robot.MoveGripper(pos=g_pos, arm=arm, max_effort=ct.GetAttr('fv_ctrl','effort')[arm], speed=1.0, blocking=False)
+          ct.robot.MoveGripper(pos=g_pos, arm=arm, max_effort=ct.GetAttr('fv_ctrl','effort')[arm], speed=100.0, blocking=False)
           g_motion= 100
           slip_detected= False
       else:

@@ -118,7 +118,7 @@ def PickupLoop(th_info, ct, arm, options):
     #ct.robot.MoveGripper(pos=l.g_pos, arm=arm, speed=100.0, blocking=False)
     #rospy.sleep(0.001)
     #l.g_pos= ct.robot.GripperPos(arm)
-    ct.robot.MoveGripper(pos=l.g_pos, arm=arm, max_effort=ct.GetAttr('fv_ctrl','effort')[arm], speed=1.0, blocking=False)
+    ct.robot.MoveGripper(pos=l.g_pos, arm=arm, max_effort=ct.GetAttr('fv_ctrl','effort')[arm], speed=100.0, blocking=False)
     l.g_motion= count_wait_gmove
 
   def ControlStep():
