@@ -43,6 +43,10 @@ def FollowGTrajLoopSpline(th_info, ct, arm, g_traj, t_traj, callback):
   #ct.robot.MoveGripper(g_traj[-1],arm=arm,blocking=False)
 
 #Follow a gripper trajectory (linear interpolation).
+#TODO: TLinearInterpolator class as been implemented as an alternative to TCubicHermiteSpline.
+#  They have almost the same interface (difference is Initialize),
+#  the most of the code can be shared.
+#  Thus, merge FollowGTrajLoopLinear with FollowGTrajLoopSpline.
 def FollowGTrajLoopLinear(th_info, ct, arm, g_traj, t_traj, callback):
   assert(len(g_traj)==len(t_traj))
   rate= 100.0
