@@ -126,11 +126,12 @@ def VizLoop(th_info, ct, objs):
         mid= viz.AddCube(Vec(Transform(xw[arm],bb_center)), bb_dim, rgb=viz.ICol(3), alpha=0.5, mid=mid)
         #Visualize finger pads:
         gpos= ct.robot.GripperPos(arm)
-        lw_xgl= Transform(lw_xe,[0,+0.5*gpos,0, 0,0,0,1])
-        lw_xgr= Transform(lw_xe,[0,-0.5*gpos,0, 0,0,0,1])
-        mid= viz.AddCube(Transform(xw[arm],lw_xgl), [0.015,0.003,0.03], rgb=viz.ICol(1), alpha=0.8, mid=mid)
-        mid= viz.AddCube(Transform(xw[arm],lw_xgr), [0.015,0.003,0.03], rgb=viz.ICol(1), alpha=0.8, mid=mid)
-        mid= viz.AddCoord(Transform(xw[arm],lw_xe), scale=[0.01,0.001], alpha=1.0, mid=mid)
+        if gpos is not None:
+          lw_xgl= Transform(lw_xe,[0,+0.5*gpos,0, 0,0,0,1])
+          lw_xgr= Transform(lw_xe,[0,-0.5*gpos,0, 0,0,0,1])
+          mid= viz.AddCube(Transform(xw[arm],lw_xgl), [0.015,0.003,0.03], rgb=viz.ICol(1), alpha=0.8, mid=mid)
+          mid= viz.AddCube(Transform(xw[arm],lw_xgr), [0.015,0.003,0.03], rgb=viz.ICol(1), alpha=0.8, mid=mid)
+          mid= viz.AddCoord(Transform(xw[arm],lw_xe), scale=[0.01,0.001], alpha=1.0, mid=mid)
       #Sentis M100 on Gripper:
       if ct.robot.Is('Baxter'):
         if xw[LEFT] is not None:
