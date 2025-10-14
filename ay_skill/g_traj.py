@@ -39,7 +39,7 @@ def FollowGTrajLoopSpline(th_info, ct, arm, g_traj, t_traj, callback):
     ct.robot.MoveGripper(g_trg,arm=arm,blocking=False)
     if t_elapsed>=t_traj[-1]:  break
     rate_adjuster.sleep()
-  print('Finishing FollowGTrajLoopSpline...')
+  print(f'[{rospy.Time.now().to_sec()}] Finishing FollowGTrajLoopSpline...')
   #ct.robot.MoveGripper(g_traj[-1],arm=arm,blocking=False)
 
 #Follow a gripper trajectory (linear interpolation).
@@ -80,7 +80,7 @@ def FollowGTrajLoopLinear(th_info, ct, arm, g_traj, t_traj, callback):
     ct.robot.MoveGripper(g_trg,arm=arm,blocking=False)
     if t_elapsed>=t_traj[-1]:  break
     rate_adjuster.sleep()
-  print('Finishing FollowGTrajLoopLinear...')
+  print(f'[{rospy.Time.now().to_sec()}] Finishing FollowGTrajLoopLinear...')
   #ct.robot.MoveGripper(g_traj[-1],arm=arm,blocking=False)
 
 '''Follow a gripper trajectory consisting of g_traj and t_traj.
@@ -94,6 +94,7 @@ TODO:Implement this function as a method of ct.robot. '''
 def FollowGTraj(ct, g_traj, t_traj, arm=None, blocking=False, callback=None, mode='linear'):
   if arm is None:  arm= ct.robot.Arm
   ct.thread_manager.Stop('follow_gripper_traj')
+  print(f'[{rospy.Time.now().to_sec()}] Called FollowGTraj: g_traj={g_traj}, t_traj={t_traj}, mode={mode}')
   if mode=='spline':
     ct.thread_manager.Add(name='follow_gripper_traj', target=lambda th_info: FollowGTrajLoopSpline(th_info,ct,arm,g_traj,t_traj,callback))
   elif mode=='linear':
