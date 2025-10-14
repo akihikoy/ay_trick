@@ -17,6 +17,21 @@ def Help():
   NOTE: In order to read the depth image (1ch, uint16) from OpenCV, use imread like:
     > cv2.imread('rsxxx-depth.png', cv2.IMREAD_ANYDEPTH)'''
 
+'''
+TODO:Move to a library (ay_py).
+Draw a cross mark on the image center.
+  img: Input image.
+  size: Cross mark pixel size.
+  col: Color.
+  thickness: Thickness of the lines.
+'''
+def DrawCrossOnCenter(img, size=20, col=(255,0,128), thickness=1):
+  rows,cols= img.shape[:2]
+  hsize= size/2
+  cv2.line(img, (cols/2-hsize,rows/2), (cols/2+hsize,rows/2), col, thickness)
+  cv2.line(img, (cols/2,rows/2-hsize), (cols/2,rows/2+hsize), col, thickness)
+  return img
+
 def Run(ct,*args):
   data_dir= args[0] if len(args)>0 else ct.DataBaseDir()+'tmp'
   rs_attr= args[1] if len(args)>1 else 'rs'
@@ -36,9 +51,9 @@ def Run(ct,*args):
         else:  break
 
         if ct.GetAttr(TMP,rs_attr).img_depth is not None:
-          cv2.imshow('depth',ct.GetAttr(TMP,rs_attr).img_depth*255)
+          cv2.imshow('depth',DrawCrossOnCenter(ct.GetAttr(TMP,rs_attr).img_depth.copy()*255))
         if ct.GetAttr(TMP,rs_attr).img_rgb is not None:
-          cv2.imshow('rgb',ct.GetAttr(TMP,rs_attr).img_rgb)
+          cv2.imshow('rgb',DrawCrossOnCenter(ct.GetAttr(TMP,rs_attr).img_rgb.copy()))
         key= cv2.waitKey(10)&0xFF
         if key==ord('q'):  break
         elif key in (ord(' '),ord('r')):  rec_req= True
