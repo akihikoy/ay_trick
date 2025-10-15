@@ -173,7 +173,12 @@ def ImageCallback(ct, msg, fmt, rs_name):
 
 
 def Run(ct,*args):
-  rs_name= args[0] if len(args)>0 else '/camera'
+  cv_ver_major, cv_ver_minor, cv_ver_patch= map(int, cv2.__version__.split('.')[:3])
+  if cv_ver_major >= 4 and cv_ver_minor >= 6:
+    CPrint(3, f'Switching to rs2_markercalib_cv411 as the CV version is {cv2.__version__}')
+    return ct.Run('test.rs2_markercalib_cv411', *args)
+
+  rs_name= args[0] if len(args)>0 else 'camera'
   fmt= args[1] if len(args)>1 else None
 
   topic= f'/{rs_name}/color/image_raw'
