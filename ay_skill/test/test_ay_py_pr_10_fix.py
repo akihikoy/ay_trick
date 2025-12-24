@@ -73,6 +73,22 @@ def Run(ct, *args):
     except Exception as e:
       CPrint(4, f'[{r_name}] Next Motion FAILED ({tag}): {e}')
 
+  def run_traj():
+    try:
+      CPrint(1, f'[{r_name}] Thread A (Long) started.')
+      ct.robot.FollowQTraj(q_traj, t_traj, arm=arm, blocking=True)
+      CPrint(1, f'[{r_name}] Thread A (Long) completed normally (or stopped without error).')
+    except Exception as e:
+      CPrint(3, f'[{r_name}] Thread A (Long) interrupted/failed as expected: {e}')
+
+  def run_traj_short():
+    try:
+      CPrint(1, f'[{r_name}] Thread B (Short) started.')
+      ct.robot.FollowQTraj(q_traj_next, t_traj_next, arm=arm, blocking=True)
+      CPrint(1, f'[{r_name}] Thread B (Short) completed normally.')
+    except Exception as e:
+      CPrint(3, f'[{r_name}] Thread B (Short) interrupted: {e}')
+
   # ==========================================
   # Case 0: Normal Execution
   # ==========================================
@@ -133,13 +149,6 @@ def Run(ct, *args):
   # This verifies if the lock is released properly to allow cancellation.
   # ==========================================
 
-  def run_traj():
-    try:
-      ct.robot.FollowQTraj(q_traj, t_traj, arm=arm, blocking=True)
-      CPrint(1, f'[{r_name}] Threaded Traj completed normally (or stopped without error).')
-    except Exception as e:
-      CPrint(3, f'[{r_name}] Threaded Traj interrupted/failed as expected: {e}')
-
   # Case 5: Thread -> StopMotion (Immediate)
   CPrint(2, '\n--- Case 5: Thread(blocking=True) -> StopMotion (Immediate) -> Next ---')
   t_start = time.time()
@@ -188,5 +197,91 @@ def Run(ct, *args):
   t.join()
   # Total time dominated by next_motion 2s.
   check_duration(t_start, 2.0, 3.5, "Case 8 Total")
+
+  CPrint(1, '--- Cleanup after Case 8 ---')
+  try_stop_motion()
+  time.sleep(0.5)
+
+  # ==========================================
+  # Group 3: Advanced & Stress Tests
+  # ==========================================
+
+  # Case 9: Test stop_before_start=False (Motion Blending/Override)
+  # Verifies that setting stop_before_start=False correctly updates
+  # the motion counter and preempts the previous motion via ActionServer
+  # without explicit _StopMotion call.
+  CPrint(2, '\n--- Case 9: Thread(blocking=True) -> Next(stop_before_start=False) ---')
+  t_start = time.time()
+  t = threading.Thread(target=run_traj)
+  t.start()
+  # Wait slightly to ensure thread starts
+  time.sleep(0.2)
+
+  try:
+    CPrint(3, f'[{r_name}] Executing Next Motion (Case 9, stop_before_start=False)')
+    # Override without explicit stop.
+    # TEST If the old thread fails due to the ActionServer will preempt it,
+    # and the motion counter mismatch will catch any retry attempts.
+    ct.robot.FollowQTraj(q_traj_next, t_traj_next, arm=arm, blocking=True, stop_before_start=False)
+
+    # Duration should be approx 2.0s (Next motion duration)
+    # If the old motion (10s) wasn't preempted, this would take longer.
+    check_duration(t_start, 2.0, 3.5, "Case 9 Total")
+
+  except Exception as e:
+    CPrint(4, f'[{r_name}] Next Motion FAILED (Case 9): {e}')
+
+  t.join()
+  time.sleep(0.5)
+
+  # Case 10: Thread vs Thread Race (Background A vs Background B)
+  # Verifies motion counter consistency when two background threads compete.
+  # The last one started should win.
+  CPrint(2, '\n--- Case 10: Thread A vs Thread B Race ---')
+
+  t_start = time.time()
+  t_a = threading.Thread(target=run_traj)      # Long motion (10s)
+  t_b = threading.Thread(target=run_traj_short) # Short motion (2s)
+
+  t_a.start()
+  time.sleep(0.1) # Ensure A grabs lock first
+  t_b.start()     # B should override A
+
+  t_a.join()
+  t_b.join()
+
+  # Total time should be dictated by Thread B (approx 2s + 0.1s delay)
+  # If A persists, it would be 10s.
+  check_duration(t_start, 1.8, 3.5, "Case 10 Total")
+  time.sleep(0.5)
+
+  # Case 11: Stress Test (Repeated Immediate Overrides)
+  # Detects potential deadlocks or resource exhaustion by rapid locking/unlocking.
+  CPrint(2, '\n--- Case 11: Stress Test (5x Immediate Override) ---')
+
+  success_count = 0
+  for i in range(5):
+    CPrint(3, f'-- Iteration {i+1}/5 --')
+    t = threading.Thread(target=run_traj)
+    t.start()
+
+    try:
+      # Immediate override
+      ct.robot.FollowQTraj(q_traj_next, t_traj_next, arm=arm, blocking=True)
+      success_count += 1
+    except Exception as e:
+      CPrint(4, f'Iteration {i+1} FAILED: {e}')
+
+    t.join()
+
+    # Simple check to ensure we are at home
+    q_now = np.array(ct.robot.Q(arm=arm))
+    if np.max(np.abs(q_now - q_home)) > 0.05:
+      CPrint(4, f'Iteration {i+1} Pos Error! Robot might be lost.')
+
+  if success_count == 5:
+    CPrint(1, f'  [Stress OK] 5/5 iterations passed successfully.')
+  else:
+    CPrint(4, f'  [Stress FAIL] Only {success_count}/5 iterations passed.')
 
   CPrint(1, f'=== All Tests Finished for {r_name} ===')
