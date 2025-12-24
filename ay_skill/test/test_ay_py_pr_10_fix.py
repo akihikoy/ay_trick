@@ -263,18 +263,28 @@ def Run(ct, *args):
   for i in range(5):
     CPrint(3, f'-- Iteration {i+1}/5 --')
     t = threading.Thread(target=run_traj)
+
+    t_start = time.time()
     t.start()
 
     try:
       # Immediate override
       ct.robot.FollowQTraj(q_traj_next, t_traj_next, arm=arm, blocking=True)
-      success_count += 1
+
+      # Override command sent without exception. Now check execution time.
+      t.join()
+      duration = time.time() - t_start
+
+      if duration < 4.0:
+        success_count += 1
+      else:
+        CPrint(4, f'Iteration {i+1} FAILED: Override ineffective. Old motion continued for {duration:.2f}s.')
+
     except Exception as e:
-      CPrint(4, f'Iteration {i+1} FAILED: {e}')
+      t.join() # Ensure thread is joined even on exception
+      CPrint(4, f'Iteration {i+1} FAILED: Exception: {e}')
 
-    t.join()
-
-    # Simple check to ensure we are at home
+    # Pos check (Home position)
     q_now = np.array(ct.robot.Q(arm=arm))
     if np.max(np.abs(q_now - q_home)) > 0.05:
       CPrint(4, f'Iteration {i+1} Pos Error! Robot might be lost.')
