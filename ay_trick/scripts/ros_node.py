@@ -26,6 +26,11 @@ ct= None
 class TStdOutToTopic(object):
   def __init__(self, pub):
     self.pub= pub
+    self.encoding = getattr(sys.stdout, 'encoding', 'utf-8')
+    self._stdout_backup= sys.stdout
+  def __getattr__(self, name):
+    #Fallback for undefined attributes such as encoding, fileno.
+    return getattr(self._stdout_backup, name)
   def __enter__(self):
     self._stdout= sys.stdout
     sys.stdout= self
